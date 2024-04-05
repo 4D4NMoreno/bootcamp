@@ -20,7 +20,7 @@ public partial class BootcampContext : DbContext
 
     public virtual DbSet<SavingAccount> SavingAccounts { get; set; }
 
-    public virtual DbSet<Customer> Customers { get; set; }
+    public virtual DbSet<Customers> Customers { get; set; }
 
     public virtual DbSet<Account> Accounts { get; set; }
 
@@ -36,7 +36,7 @@ public partial class BootcampContext : DbContext
 
         modelBuilder.ApplyConfiguration(new SavingAccountConfiguration());
 
-        modelBuilder.ApplyConfiguration(new CustomerConfiguration());
+        modelBuilder.ApplyConfiguration(new CustomersConfiguration());
 
         modelBuilder.ApplyConfiguration(new CurrentAccountConfiguration());
 

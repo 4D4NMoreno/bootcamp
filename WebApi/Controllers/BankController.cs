@@ -1,6 +1,6 @@
 ﻿using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
-using Core.Models;
+using Core.Request;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
@@ -42,7 +42,7 @@ public class BankController : BaseApiController
     [HttpGet("all")]
     public async Task<IActionResult> GetAll()
     {
-        var banks = await _service.GetAll();
-        return Ok(banks);
+        var bank = await _service.GetAll();
+        return Ok(bank);
     }
 }

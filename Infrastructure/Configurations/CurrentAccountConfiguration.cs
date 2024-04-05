@@ -8,16 +8,18 @@ namespace Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<CurrentAccount> entity)
         {
+            entity.ToTable("CurrentAccount");
+
             entity.HasKey(e => e.Id).HasName("CurrentAccount_pkey");
 
-            entity.Property(e => e.OperationalLimit).HasColumnType("decimal(20, 5)");
-            entity.Property(e => e.MonthAverage).HasColumnType("decimal(20, 5)");
-            entity.Property(e => e.Interest).HasColumnType("decimal(10, 5)");
+            entity.Property(e => e.OperationalLimit).HasMaxLength(400).IsRequired();
+            entity.Property(e => e.MonthAverage).HasMaxLength(100).IsRequired();
+            entity.Property(e => e.Interest).HasMaxLength(300).IsRequired();
 
             entity
-                .HasOne(CurrentAccount => CurrentAccount.Account)
-                .WithMany(Account => Account.CurrentAccounts)
-                .HasForeignKey(CurrentAccount => CurrentAccount.AccountId);
+            .HasOne(CurrentAccount => CurrentAccount.Account)
+            .WithMany(Account => Account.CurrentAccounts)
+            .HasForeignKey(Account => Account.AccountId);
         }
     }
 }

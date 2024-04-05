@@ -3,6 +3,7 @@ using Core.Models;
 using Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Core.Entities;
+using Core.Request;
 
 namespace Infrastructure.Repositories;
 
