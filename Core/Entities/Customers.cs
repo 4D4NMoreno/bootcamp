@@ -18,9 +18,10 @@ public class Customers
 
     public string? Phone { get; set; }
 
+    public DateTime? Birth { get; set; }
+
     public int BankId { get; set; }
 
-    public DateTime? Birth { get; set; }
 
     public CustomerStatus CustomerStatus { get; set; } = CustomerStatus.Active;
     public virtual Bank Bank { get; set; } = null!;

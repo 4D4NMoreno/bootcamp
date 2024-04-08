@@ -24,4 +24,17 @@ public class CustomerService : ICustomerService
 
         return await _repository.Add(model);
     }
+    public async Task<CustomerDTO> Update(UpdateCustomerModel model)
+    {
+        var updatedCustomer = await _repository.Update(model);
+        return updatedCustomer;
+    }
+    public async Task<bool> Delete(int id)
+    {
+        return await _repository.Delete(id);
+    }
+    public async Task<CustomerDTO> GetById(int id)
+    {
+        return await _repository.GetById(id);
+    }
 }

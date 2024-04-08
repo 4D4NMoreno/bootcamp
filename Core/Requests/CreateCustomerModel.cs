@@ -21,5 +21,5 @@ public class CreateCustomerModel
 
     public DateTime? Birth { get; set; }
 
-    public string? CustomerStatus { get; set; } = string.Empty;
+    public string? CustomerStatus { get; set; }
 }
