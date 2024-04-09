@@ -28,7 +28,9 @@ public class CustomerController : BaseApiController
     public async Task<IActionResult> Update([FromBody] UpdateCustomerModel model)
     {
 
+
         return Ok(await _customerService.Update(model));
+
     }
     [HttpDelete("Eliminar/{id}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
@@ -42,4 +44,5 @@ public class CustomerController : BaseApiController
         var customer = await _customerService.GetById(id);
         return Ok(customer);
     }
+
 }

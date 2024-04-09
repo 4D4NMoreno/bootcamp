@@ -14,32 +14,32 @@ public class BankController : BaseApiController
         _service = service;
     }
 
-    [HttpPost]
+    [HttpPost("Crear")]
     public async Task<IActionResult> Create([FromBody] CreateBankModel request)
     {
         return Ok(await _service.Add(request));
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("Buscar/{id}")]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
         var bank = await _service.GetById(id);
         return Ok(bank);
     }
 
-    [HttpPut]
+    [HttpPut("Actualizar")]
     public async Task<IActionResult> Update([FromBody] UpdateBankModel request)
     {
         return Ok(await _service.Update(request));
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("Eliminar/{id}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         return Ok(await _service.Delete(id));
     }
 
-    [HttpGet("all")]
+    [HttpGet("Obtener/Todos")]
     public async Task<IActionResult> GetAll()
     {
         var bank = await _service.GetAll();

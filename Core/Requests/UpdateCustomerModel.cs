@@ -9,7 +9,9 @@ public class UpdateCustomerModel
     public string? Address { get; set; }
     public string? Mail { get; set; }
     public string? Phone { get; set; }
+
     public string? CustomerStatus { get; set; }
+
     public DateTime Birth { get; set; }
     public int? BankId { get; set; }
 }
