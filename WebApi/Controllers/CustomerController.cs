@@ -31,12 +31,14 @@ public class CustomerController : BaseApiController
 
         return Ok(await _customerService.Update(model));
 
+
     }
     [HttpDelete("Eliminar/{id}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
         return Ok(await _customerService.Delete(id));
     }
+
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromRoute] int id)

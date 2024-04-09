@@ -34,7 +34,7 @@ namespace Infrastructure.Mappings;
                 .Map(dest => dest.CustomerStatus, src => src.CustomerStatus)
                 .Map(dest => dest.Birth, src => src.Birth)
                 .Map(dest => dest.Bank, src => src.Bank);
-    }
+        }
    
-}
+    }
 

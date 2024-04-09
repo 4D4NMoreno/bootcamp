@@ -26,16 +26,17 @@ namespace Infrastructure.Repositories
 
             var customerToCreate = model.Adapt<Customers>();
 
+            var customerBank = await _context.Banks.FindAsync(customerToCreate.BankId);
 
 
             _context.Customers.Add(customerToCreate);
 
             await _context.SaveChangesAsync();
 
-            var customerBank = await _context.Banks.FindAsync(customerToCreate.BankId);
 
 
             var customerDTO = customerToCreate.Adapt<CustomerDTO>();
+
 
 
 
@@ -89,24 +90,38 @@ namespace Infrastructure.Repositories
 
         public async Task<CustomerDTO> Update(UpdateCustomerModel model)
         {
-            var customerToUpdate = await _context.Customers.FindAsync(model.Id);
+            var customer = await _context.Customers.FindAsync(model.Id);
+            var bank = await _context.Banks.FindAsync(model.BankId);
 
-            await _context.Banks.FindAsync(model.BankId);
+            if (customer is null) throw new Exception("Customer was not found");
 
-            if (customerToUpdate == null) throw new ArgumentException("El cliente no existe");
+            model.Adapt(customer);
 
-            model.Adapt(customerToUpdate);
-
-            _context.Customers.Update(customerToUpdate);
+            _context.Customers.Update(customer);
 
             await _context.SaveChangesAsync();
 
-            var customerDTO = customerToUpdate.Adapt<CustomerDTO>();
+            var customerDTO = customer.Adapt<CustomerDTO>();
 
             return customerDTO;
         }
+    
 
-            public async Task<CustomerDTO> GetById(int id)
+
+    public async Task<bool> Delete(int id)
+    {
+        var customer = await _context.Customers.FindAsync(id);
+
+        if (customer is null) throw new Exception("Customer not found");
+
+        _context.Customers.Remove(customer);
+
+        var result = await _context.SaveChangesAsync();
+
+        return result > 0;
+    }
+
+        public async Task<CustomerDTO> GetById(int id)
         {
             var Customers = await _context.Customers.FindAsync(id);
 
@@ -117,18 +132,6 @@ namespace Infrastructure.Repositories
             var customerDTO = Customers.Adapt<CustomerDTO>();
 
             return customerDTO;
-        }
-        public async Task<bool> Delete(int id)
-        {
-            var customer = await _context.Customers.FindAsync(id);
-
-            if (customer is null) throw new Exception("Customer not found");
-
-            _context.Customers.Remove(customer);
-
-            var result = await _context.SaveChangesAsync();
-
-            return result > 0;
         }
 
 

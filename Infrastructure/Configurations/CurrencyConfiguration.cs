@@ -8,6 +8,8 @@ public class CurrencyConfiguration : IEntityTypeConfiguration<Currency>
 {
     public void Configure(EntityTypeBuilder<Currency> entity)
     {
+        entity.ToTable("Currency");
+
         entity
             .HasKey(e => e.Id)
             .HasName("Currency_pkey");
