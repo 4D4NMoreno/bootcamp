@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Configurations
 {
-    public class CustomersConfiguration : IEntityTypeConfiguration<Customers>
+    public class CustomersConfiguration : IEntityTypeConfiguration<Customer>
     {
-        public void Configure(EntityTypeBuilder<Customers> entity)
+        public void Configure(EntityTypeBuilder<Customer> entity)
         {
             entity.ToTable("Customers");
             entity.HasKey(e => e.Id).HasName("Customers_pkey");
@@ -22,6 +22,11 @@ namespace Infrastructure.Configurations
              .HasOne(customers => customers.Bank)
             .WithMany(Bank => Bank.Customers)
             .HasForeignKey(Bank => Bank.BankId);
+
+            entity
+                .HasMany(x => x.CreditCards)
+                .WithOne(x => x.Customer)
+                .HasForeignKey(Customer => Customer.Id);
 
         }
     }

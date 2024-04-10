@@ -99,6 +99,61 @@ namespace Infrastructure.Migrations
                     b.ToTable("Bank", (string)null);
                 });
 
+            modelBuilder.Entity("Core.Entities.CreditCard", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("AvaibleCredit")
+                        .HasColumnType("numeric(20,5)");
+
+                    b.Property<int>("CVV")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CardNumber")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CreditCardStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("CreditLimit")
+                        .HasColumnType("numeric(20,5)");
+
+                    b.Property<int>("CurrencyId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("CurrentDebt")
+                        .HasColumnType("numeric(20,5)");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Designation")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("InterestRate")
+                        .HasColumnType("numeric(20,5)");
+
+                    b.Property<DateTime>("IssueDate")
+                        .HasColumnType("date");
+
+                    b.HasKey("Id")
+                        .HasName("CreditCard_pkey");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("CreditCards", (string)null);
+                });
+
             modelBuilder.Entity("Core.Entities.Currency", b =>
                 {
                     b.Property<int>("Id")
@@ -108,18 +163,20 @@ namespace Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("BuyValue")
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric(20,5)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<decimal>("SellValue")
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric(20,5)");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("Currency_pkey");
 
-                    b.ToTable("Currency");
+                    b.ToTable("Currency", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.CurrentAccount", b =>
@@ -156,7 +213,7 @@ namespace Infrastructure.Migrations
                     b.ToTable("CurrentAccount", (string)null);
                 });
 
-            modelBuilder.Entity("Core.Entities.Customers", b =>
+            modelBuilder.Entity("Core.Entities.Customer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -173,6 +230,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<DateTime?>("Birth")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreditCardId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("CustomerStatus")
                         .HasColumnType("integer");
@@ -278,7 +338,7 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Core.Entities.Customers", "Customers")
+                    b.HasOne("Core.Entities.Customer", "Customers")
                         .WithMany("Accounts")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -287,6 +347,25 @@ namespace Infrastructure.Migrations
                     b.Navigation("Currency");
 
                     b.Navigation("Customers");
+                });
+
+            modelBuilder.Entity("Core.Entities.CreditCard", b =>
+                {
+                    b.HasOne("Core.Entities.Currency", "Currency")
+                        .WithMany("CreditCards")
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Core.Entities.Customer", "Customer")
+                        .WithMany("CreditCards")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Currency");
+
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("Core.Entities.CurrentAccount", b =>
@@ -300,7 +379,7 @@ namespace Infrastructure.Migrations
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("Core.Entities.Customers", b =>
+            modelBuilder.Entity("Core.Entities.Customer", b =>
                 {
                     b.HasOne("Core.Entities.Bank", "Bank")
                         .WithMany("Customers")
@@ -350,11 +429,15 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Core.Entities.Currency", b =>
                 {
                     b.Navigation("Accounts");
+
+                    b.Navigation("CreditCards");
                 });
 
-            modelBuilder.Entity("Core.Entities.Customers", b =>
+            modelBuilder.Entity("Core.Entities.Customer", b =>
                 {
                     b.Navigation("Accounts");
+
+                    b.Navigation("CreditCards");
                 });
 #pragma warning restore 612, 618
         }

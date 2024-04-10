@@ -23,22 +23,15 @@ namespace Infrastructure.Repositories
                 .Include(c => c.Bank)
                 .AsQueryable();
 
-
-            var customerToCreate = model.Adapt<Customers>();
+            var customerToCreate = model.Adapt<Customer>();
 
             var customerBank = await _context.Banks.FindAsync(customerToCreate.BankId);
-
 
             _context.Customers.Add(customerToCreate);
 
             await _context.SaveChangesAsync();
 
-
-
             var customerDTO = customerToCreate.Adapt<CustomerDTO>();
-
-
-
 
             return customerDTO;
         }

@@ -1,10 +1,9 @@
 ﻿using Core.Constants;
 
-namespace Core.Entities;
+namespace Core.Request;
 
-public class Customers
+public class CreateCustomerModel
 {
-    public int Id { get; set; }
 
     public string Name { get; set; } = string.Empty;
 
@@ -18,12 +17,10 @@ public class Customers
 
     public string? Phone { get; set; }
 
-    public DateTime? Birth { get; set; }
-
     public int BankId { get; set; }
 
+    public DateTime? Birth { get; set; }
 
-    public CustomerStatus CustomerStatus { get; set; } = CustomerStatus.Active;
-    public virtual Bank Bank { get; set; } = null!;
-    public ICollection<Account> Accounts { get; set; } = new List<Account>();
+    public string? CustomerStatus { get; set; }
+
 }

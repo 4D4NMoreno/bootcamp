@@ -28,7 +28,7 @@ namespace WebApi.Controllers
             var currency = await _service.GetFiltered(filter);
             return Ok(currency);
         }
-        [HttpPost("{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
 

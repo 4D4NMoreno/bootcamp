@@ -18,10 +18,10 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    Phone = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    Mail = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Address = table.Column<string>(type: "character varying(400)", maxLength: 400, nullable: false)
+                    Name = table.Column<string>(type: "character varying(400)", maxLength: 400, nullable: false),
+                    Phone = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Mail = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
+                    Address = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -34,13 +34,13 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    BuyValue = table.Column<decimal>(type: "numeric", nullable: false),
-                    SellValue = table.Column<decimal>(type: "numeric", nullable: false)
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    BuyValue = table.Column<decimal>(type: "numeric(20,5)", nullable: false),
+                    SellValue = table.Column<decimal>(type: "numeric(20,5)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Currency", x => x.Id);
+                    table.PrimaryKey("Currency_pkey", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -49,18 +49,20 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: false),
-                    Lastname = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
-                    DocumentNumber = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    Address = table.Column<string>(type: "character varying(400)", maxLength: 400, nullable: true),
+                    Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Lastname = table.Column<string>(type: "text", precision: 20, scale: 5, nullable: true),
+                    DocumentNumber = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Address = table.Column<string>(type: "text", precision: 20, scale: 5, nullable: true),
                     Mail = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    Phone = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
-                    Estado = table.Column<int>(type: "integer", maxLength: 100, nullable: false),
-                    BankId = table.Column<int>(type: "integer", nullable: false)
+                    Phone = table.Column<string>(type: "text", precision: 20, scale: 5, nullable: true),
+                    Birth = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    BankId = table.Column<int>(type: "integer", nullable: false),
+                    CreditCardId = table.Column<int>(type: "integer", nullable: false),
+                    CustomerStatus = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("Customer_pkey", x => x.Id);
+                    table.PrimaryKey("Customers_pkey", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Customers_Bank_BankId",
                         column: x => x.BankId,
@@ -101,21 +103,57 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CurrentAccounts",
+                name: "CreditCards",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    OperationalLimit = table.Column<decimal>(type: "numeric(20,5)", nullable: true),
-                    MonthAverage = table.Column<decimal>(type: "numeric(20,5)", nullable: true),
-                    Interest = table.Column<decimal>(type: "numeric(10,5)", nullable: true),
+                    Designation = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    IssueDate = table.Column<DateTime>(type: "date", nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "date", nullable: false),
+                    CardNumber = table.Column<int>(type: "integer", nullable: false),
+                    CVV = table.Column<int>(type: "integer", nullable: false),
+                    CreditCardStatus = table.Column<int>(type: "integer", nullable: false),
+                    CreditLimit = table.Column<decimal>(type: "numeric(20,5)", nullable: false),
+                    AvaibleCredit = table.Column<decimal>(type: "numeric(20,5)", nullable: false),
+                    CurrentDebt = table.Column<decimal>(type: "numeric(20,5)", nullable: false),
+                    InterestRate = table.Column<decimal>(type: "numeric(20,5)", nullable: false),
+                    CustomerId = table.Column<int>(type: "integer", nullable: false),
+                    CurrencyId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("CreditCard_pkey", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CreditCards_Currency_CurrencyId",
+                        column: x => x.CurrencyId,
+                        principalTable: "Currency",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CreditCards_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CurrentAccount",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    OperationalLimit = table.Column<decimal>(type: "numeric", maxLength: 400, nullable: false),
+                    MonthAverage = table.Column<decimal>(type: "numeric", maxLength: 100, nullable: false),
+                    Interest = table.Column<decimal>(type: "numeric", maxLength: 300, nullable: false),
                     AccountId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("CurrentAccount_pkey", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CurrentAccounts_Accounts_AccountId",
+                        name: "FK_CurrentAccount_Accounts_AccountId",
                         column: x => x.AccountId,
                         principalTable: "Accounts",
                         principalColumn: "Id",
@@ -177,8 +215,18 @@ namespace Infrastructure.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CurrentAccounts_AccountId",
-                table: "CurrentAccounts",
+                name: "IX_CreditCards_CurrencyId",
+                table: "CreditCards",
+                column: "CurrencyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CreditCards_CustomerId",
+                table: "CreditCards",
+                column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CurrentAccount_AccountId",
+                table: "CurrentAccount",
                 column: "AccountId");
 
             migrationBuilder.CreateIndex(
@@ -201,7 +249,10 @@ namespace Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CurrentAccounts");
+                name: "CreditCards");
+
+            migrationBuilder.DropTable(
+                name: "CurrentAccount");
 
             migrationBuilder.DropTable(
                 name: "Movements");
