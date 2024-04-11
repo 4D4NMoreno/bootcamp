@@ -17,24 +17,17 @@ public class CreditCardService : ICreditCardService
     }
     public async Task<CreditCardDTO> Add(CreateCreditCardModel model)
     {
-        //// Validar el CustomerId
-        //if (!BeValidCustomerId(model.CustomerId))
-        //{
-        //    throw new ArgumentException("El CustomerId proporcionado no es válido.");
-        //}
-
-        // Validar el CurrencyId (si es necesario)
-        //=============================================================================
-        bool nameIsInUse = await _repository.BeValidCustomerId(model.CustomerId);
-
-        if (nameIsInUse)
+  
+        if (await _repository.BeValidCustomerId(model.CustomerId) is false)
         {
-            throw new BusinessLogicException($"The Customer = {model.CustomerId} is already  use Credit Card");
+            throw new NotFoundException("El CustomerId proporcionado no es válido.");
         }
-        //if (!BeValidCurrencyId(model.CurrencyId))
-        //{
-        //    throw new ArgumentException("La moneda proporcionado no es válido.");
-        //}
+
+        if (await _repository.BeValidCurrencyId(model.CurrencyId) is false)
+        {
+            throw new NotFoundException("El CurrencyId proporcionado no es válido.");
+        }
+
 
         return await _repository.Add(model);
     }

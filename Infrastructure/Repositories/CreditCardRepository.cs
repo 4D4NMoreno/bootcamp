@@ -21,6 +21,7 @@ public class CreditCardRepository : ICreditCardRepository
         var query = _context.CreditCards
                 .Include(c => c.Currency)
                 .AsQueryable();
+           
 
 
         var creditCardToCreate = model.Adapt<CreditCard>();
@@ -41,15 +42,15 @@ public class CreditCardRepository : ICreditCardRepository
         return creditCardDTO;
     }
 
-    public async Task<bool> BeValidCurrencyId(int customerId)
+    public async Task<bool> BeValidCurrencyId(int currencyId)
     {
-        return await _context.CreditCards.AnyAsync(cc => cc.CustomerId == customerId);
+        return await _context.Currencies.AnyAsync(cc => cc.Id == currencyId);
     }
 
-    public async Task<bool> BeValidCustomerId(int currencyId)
+    public async Task<bool> BeValidCustomerId(int customerId)
     {
  
-        return await _context.CreditCards.AnyAsync(c => c.CurrencyId == currencyId);
+        return await _context.Customers.AnyAsync(c => c.Id == customerId);
 
     }
 
