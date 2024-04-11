@@ -1,5 +1,6 @@
 ﻿using Core.Interfaces.Services;
 using Core.Request;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -23,6 +24,15 @@ namespace WebApi.Controllers
         {
             var creditCard = await _service.GetAll();
             return Ok(creditCard);
+        }
+        [HttpPut("Actualizar")]
+        public async Task<IActionResult> Update([FromBody] UpdateCreditCardModel model)
+        {
+
+
+            return Ok(await _service.Update(model));
+
+
         }
     }
 }

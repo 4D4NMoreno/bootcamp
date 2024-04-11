@@ -35,4 +35,8 @@ public class CreditCardService : ICreditCardService
     {
         return await _repository.GetAll();
     }
+    public async Task<CreditCardDTO> Update(UpdateCreditCardModel model)
+    {
+        return await _repository.Update(model);
+    }
 }

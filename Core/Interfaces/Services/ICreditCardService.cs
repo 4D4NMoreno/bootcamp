@@ -9,4 +9,6 @@ public interface ICreditCardService
     Task<CreditCardDTO> Add(CreateCreditCardModel model);
 
     Task<List<CreditCardDTO>> GetAll();
+
+    Task<CreditCardDTO> Update(UpdateCreditCardModel model);
 }

@@ -11,15 +11,17 @@ namespace Infrastructure.Services;
 public class JwtProvider : IJwtProvider
 {
     private readonly JwtOptions _jwtSettings;
-
+ 
     public JwtProvider(IOptions<JwtOptions> jwtSettings)
     {
         _jwtSettings = jwtSettings.Value;
     }
 
-    public string Generate()
+
+    public string Generate(IEnumerable<string> roles)
     {
-        var userRoles = new List<string> { "Admin", "Securidad", "Clientes" };
+        
+        //var userRoles = new List<string> { "Admin", "Securidad", "Clientes" };
 
         var claims = new List<Claim>
         //var claims = new Claim[]
@@ -28,7 +30,7 @@ public class JwtProvider : IJwtProvider
             new Claim(JwtRegisteredClaimNames.Email, "prueba@prueba.com"),
             //new Claim(ClaimTypes.Role, string.Join(",", userRoles))
         };
-        foreach (var role in userRoles)
+        foreach (var role in roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
         }

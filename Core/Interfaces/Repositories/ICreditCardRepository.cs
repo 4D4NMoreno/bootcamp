@@ -12,4 +12,6 @@ public interface ICreditCardRepository
     Task<bool> BeValidCustomerId(int customerId);
 
     Task<bool> BeValidCurrencyId(int currencyId);
+
+    Task<CreditCardDTO> Update(UpdateCreditCardModel model);
 }

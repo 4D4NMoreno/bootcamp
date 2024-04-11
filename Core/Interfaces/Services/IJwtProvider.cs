@@ -2,5 +2,6 @@
 
 public interface IJwtProvider
 {
-    string Generate();
+    string Generate(IEnumerable<string> roles);
+    //Dictionary<string, string> GenerateTokensForRoles(List<string> userRoles);
 }

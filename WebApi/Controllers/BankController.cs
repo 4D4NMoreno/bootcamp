@@ -1,6 +1,7 @@
 ﻿using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers;
@@ -8,10 +9,12 @@ namespace WebApi.Controllers;
 public class BankController : BaseApiController
 {
     private readonly IBankService _service;
+    private readonly IJwtProvider _jwtProvider;
 
-    public BankController(IBankService service)
+    public BankController(IBankService service, IJwtProvider jwtProvider)
     {
         _service = service;
+        _jwtProvider = jwtProvider;
     }
 
     [HttpPost]
