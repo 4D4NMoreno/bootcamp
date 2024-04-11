@@ -72,7 +72,9 @@ public class CreditCardRepository : ICreditCardRepository
         //    .Include(c => c.Currency)
         //    .ToListAsync();
         var creditCard = await _context.CreditCards.FindAsync(model.Id);
-        var customer = await _context.Customers.FindAsync(model.CustomerId);
+        var creditCardCustomer = await _context.Customers
+      .Include(c => c.Bank)
+      .FirstOrDefaultAsync(c => c.Id == model.CustomerId);
         var currency = await _context.Currencies.FindAsync(model.CurrencyId);
 
         if (creditCard is null) throw new Exception("Customer was not found");

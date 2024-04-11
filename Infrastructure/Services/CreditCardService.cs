@@ -37,6 +37,15 @@ public class CreditCardService : ICreditCardService
     }
     public async Task<CreditCardDTO> Update(UpdateCreditCardModel model)
     {
+        if (await _repository.BeValidCustomerId(model.CustomerId) is false)
+        {
+            throw new NotFoundException("El CustomerId proporcionado no es válido.");
+        }
+
+        if (await _repository.BeValidCurrencyId(model.CurrencyId) is false)
+        {
+            throw new NotFoundException("El CurrencyId proporcionado no es válido.");
+        }
         return await _repository.Update(model);
     }
 }
