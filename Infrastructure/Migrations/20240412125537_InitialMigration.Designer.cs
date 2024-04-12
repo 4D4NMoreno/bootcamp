@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(BootcampContext))]
-    [Migration("20240410142146_InitialMigration")]
+    [Migration("20240412125537_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -46,6 +46,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Holder")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Number")
                         .IsRequired()
@@ -194,26 +197,21 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal?>("Interest")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric(10,5)");
 
                     b.Property<decimal?>("MonthAverage")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric(20,5)");
 
                     b.Property<decimal?>("OperationalLimit")
-                        .IsRequired()
-                        .HasMaxLength(400)
-                        .HasColumnType("numeric");
+                        .HasColumnType("numeric(20,5)");
 
                     b.HasKey("Id")
                         .HasName("CurrentAccount_pkey");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("AccountId")
+                        .IsUnique();
 
-                    b.ToTable("CurrentAccount", (string)null);
+                    b.ToTable("CurrentAccounts");
                 });
 
             modelBuilder.Entity("Core.Entities.Customer", b =>
@@ -322,13 +320,13 @@ namespace Infrastructure.Migrations
                         .HasColumnType("character varying(100)");
 
                     b.Property<int>("SavingType")
-                        .HasMaxLength(50)
                         .HasColumnType("integer");
 
                     b.HasKey("Id")
                         .HasName("SavingAccount_pkey");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("AccountId")
+                        .IsUnique();
 
                     b.ToTable("SavingAccounts");
                 });
@@ -341,7 +339,7 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Core.Entities.Customer", "Customers")
+                    b.HasOne("Core.Entities.Customer", "Customer")
                         .WithMany("Accounts")
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -349,7 +347,7 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("Currency");
 
-                    b.Navigation("Customers");
+                    b.Navigation("Customer");
                 });
 
             modelBuilder.Entity("Core.Entities.CreditCard", b =>
@@ -374,8 +372,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Core.Entities.CurrentAccount", b =>
                 {
                     b.HasOne("Core.Entities.Account", "Account")
-                        .WithMany("CurrentAccounts")
-                        .HasForeignKey("AccountId")
+                        .WithOne("CurrentAccount")
+                        .HasForeignKey("Core.Entities.CurrentAccount", "AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -407,8 +405,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Core.Entities.SavingAccount", b =>
                 {
                     b.HasOne("Core.Entities.Account", "Account")
-                        .WithMany("SavingAccounts")
-                        .HasForeignKey("AccountId")
+                        .WithOne("SavingAccount")
+                        .HasForeignKey("Core.Entities.SavingAccount", "AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -417,11 +415,11 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Core.Entities.Account", b =>
                 {
-                    b.Navigation("CurrentAccounts");
+                    b.Navigation("CurrentAccount");
 
                     b.Navigation("Movements");
 
-                    b.Navigation("SavingAccounts");
+                    b.Navigation("SavingAccount");
                 });
 
             modelBuilder.Entity("Core.Entities.Bank", b =>

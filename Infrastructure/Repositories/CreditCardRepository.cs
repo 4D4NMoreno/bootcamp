@@ -77,7 +77,7 @@ public class CreditCardRepository : ICreditCardRepository
       .FirstOrDefaultAsync(c => c.Id == model.CustomerId);
         var currency = await _context.Currencies.FindAsync(model.CurrencyId);
 
-        if (creditCard is null) throw new Exception("Customer was not found");
+        //if (creditCardCustomer is null) throw new Exception("Customer was not found");
 
         model.Adapt(creditCard);
 

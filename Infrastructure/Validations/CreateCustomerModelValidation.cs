@@ -22,8 +22,5 @@ public class CreateCustomerModelValidation : AbstractValidator<CreateCustomerMod
         RuleFor(x => x.Mail)
             .EmailAddress();
 
-        RuleFor(x => x.CustomerStatus)
-            .Must(x => Enum.IsDefined(typeof(CustomerStatus), x))
-            .WithMessage("Invalid Customer Status");
     }
 }

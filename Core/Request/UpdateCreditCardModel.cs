@@ -1,4 +1,6 @@
-﻿namespace Core.Request;
+﻿using Core.Constants;
+
+namespace Core.Request;
 
 public class UpdateCreditCardModel
 {
@@ -25,6 +27,6 @@ public class UpdateCreditCardModel
 
     public int CurrencyId { get; set; }
 
-    public string? CreditCardStatus { get; set; }
+    public string CreditCardStatus { get; set; }
 
 }

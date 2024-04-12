@@ -83,7 +83,8 @@ namespace Infrastructure.Migrations
                     Balance = table.Column<decimal>(type: "numeric(20,5)", precision: 20, scale: 5, nullable: false),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     CurrencyId = table.Column<int>(type: "integer", nullable: false),
-                    CustomerId = table.Column<int>(type: "integer", nullable: false)
+                    CustomerId = table.Column<int>(type: "integer", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -113,13 +114,13 @@ namespace Infrastructure.Migrations
                     ExpirationDate = table.Column<DateTime>(type: "date", nullable: false),
                     CardNumber = table.Column<int>(type: "integer", nullable: false),
                     CVV = table.Column<int>(type: "integer", nullable: false),
-                    CreditCardStatus = table.Column<int>(type: "integer", nullable: false),
                     CreditLimit = table.Column<decimal>(type: "numeric(20,5)", nullable: false),
                     AvaibleCredit = table.Column<decimal>(type: "numeric(20,5)", nullable: false),
                     CurrentDebt = table.Column<decimal>(type: "numeric(20,5)", nullable: false),
                     InterestRate = table.Column<decimal>(type: "numeric(20,5)", nullable: false),
                     CustomerId = table.Column<int>(type: "integer", nullable: false),
-                    CurrencyId = table.Column<int>(type: "integer", nullable: false)
+                    CurrencyId = table.Column<int>(type: "integer", nullable: false),
+                    CreditCardStatus = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -139,21 +140,21 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CurrentAccount",
+                name: "CurrentAccounts",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    OperationalLimit = table.Column<decimal>(type: "numeric", maxLength: 400, nullable: false),
-                    MonthAverage = table.Column<decimal>(type: "numeric", maxLength: 100, nullable: false),
-                    Interest = table.Column<decimal>(type: "numeric", maxLength: 300, nullable: false),
+                    OperationalLimit = table.Column<decimal>(type: "numeric(20,5)", nullable: true),
+                    MonthAverage = table.Column<decimal>(type: "numeric(20,5)", nullable: true),
+                    Interest = table.Column<decimal>(type: "numeric(10,5)", nullable: true),
                     AccountId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("CurrentAccount_pkey", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CurrentAccount_Accounts_AccountId",
+                        name: "FK_CurrentAccounts_Accounts_AccountId",
                         column: x => x.AccountId,
                         principalTable: "Accounts",
                         principalColumn: "Id",
@@ -189,7 +190,7 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SavingType = table.Column<int>(type: "integer", maxLength: 50, nullable: false),
+                    SavingType = table.Column<int>(type: "integer", nullable: false),
                     HolderName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     AccountId = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -225,9 +226,10 @@ namespace Infrastructure.Migrations
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CurrentAccount_AccountId",
-                table: "CurrentAccount",
-                column: "AccountId");
+                name: "IX_CurrentAccounts_AccountId",
+                table: "CurrentAccounts",
+                column: "AccountId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Customers_BankId",
@@ -242,7 +244,8 @@ namespace Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_SavingAccounts_AccountId",
                 table: "SavingAccounts",
-                column: "AccountId");
+                column: "AccountId",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -252,7 +255,7 @@ namespace Infrastructure.Migrations
                 name: "CreditCards");
 
             migrationBuilder.DropTable(
-                name: "CurrentAccount");
+                name: "CurrentAccounts");
 
             migrationBuilder.DropTable(
                 name: "Movements");
