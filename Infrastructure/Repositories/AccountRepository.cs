@@ -1,11 +1,12 @@
 ﻿using Core.Constants;
 using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Core.Models;
 using Core.Request;
+using Core.Requests;
 using Infrastructure.Contexts;
 using Mapster;
-using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
@@ -17,62 +18,79 @@ public class AccountRepository : IAccountRepository
     public AccountRepository(BootcampContext context)
     {
         _context = context;
-
     }
-    public async Task<AccountDTO> Add(CreateAccountModel model)
-    {
-        var customer = await _context.Accounts.FindAsync(model.CustomerId);
-        var currency = await _context.Accounts.FindAsync(model.CurrencyId);
-        var customer2 = await _context.Customers
-        .Include(c => c.Bank)
-        .FirstOrDefaultAsync(c => c.Id == model.CustomerId);
 
+    public async Task<AccountDTO> Add(CreateAccountRequest request)
+    {
+
+
+        var account = request.Adapt<Account>();
+
+        if (account.Type == AccountType.Saving)
+        {
+            account.SavingAccount = request.CreateSavingAccount.Adapt<SavingAccount>();
+        }
+
+        if (account.Type == AccountType.Current)
+        {
+            account.CurrentAccount = request.CreateCurrentAccount.Adapt<CurrentAccount>();
+        }
+
+        _context.Accounts.Add(account);
+
+        await _context.SaveChangesAsync();
+
+        var createdAccount = await _context.Accounts
+            .Include(a => a.Currency)
+            .Include(a => a.Customer)
+            .Include(a => a.SavingAccount)
+            .Include(a => a.CurrentAccount)
+            .FirstOrDefaultAsync(a => a.Id == account.Id);
+
+        return createdAccount.Adapt<AccountDTO>();
+    }
+
+    public async Task<AccountDTO> GetById(int id)
+    {
+        var account = await _context.Accounts
+            .Include(a => a.Currency)
+            .Include(a => a.Customer)
+            .Include(a => a.SavingAccount)
+            .Include(a => a.CurrentAccount)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (account is null) throw new NotFoundException($"The account with id: {id} doest not exist");
+
+        return account.Adapt<AccountDTO>();
+    }
+
+
+    public async Task<List<AccountDTO>> GetFiltered(FilterAccountModel filter)
+    {
         var query = _context.Accounts
-       .Include(c => c.SavingAccount)
-       .Include(c => c.Customer)
-       .Include(c => c.Currency)
-       .AsQueryable();
+                .Include(c => c.Currency)
+                .AsQueryable();
+
+        if (filter.Number != null)
+        {
+            query = query.Where(x =>
+                x.Number == filter.Number);
+        }
+        if (filter.CurrencyId != null)
+        {
+            query = query.Where(x => x.Type == filter.Type);
+
+        }
+        if (filter.CurrencyId != null)
+        {
+            query = query.Where(x => x.CurrencyId == filter.CurrencyId);
+        }
         var result = await query.ToListAsync();
 
-        var accountToCreate = model.Adapt<Account>();
-        _context.Accounts.Add(accountToCreate);
-        await _context.SaveChangesAsync();
 
+        var accountDTOs = result.Adapt<List<AccountDTO>>();
 
-        if (model.AccountType == "Saving")
-        {
-            var savingAccountDTO = new SavingAccountDTO
-            {
-                AccountId = accountToCreate.Id,
-                HolderName = accountToCreate.Holder,
-                //SavingType = model.SavingType
-            };
-            var savingAccount = savingAccountDTO.Adapt<SavingAccount>();
-            _context.SavingAccounts.Add(savingAccount);
-        }
-
-        else if (model.AccountType == "Current")
-        {
-            var currentAccountDTO = new CurrentAccountDTO
-            {
-                AccountId = accountToCreate.Id,
-                OperationalLimit = model.currentAccount.OperationalLimit,
-                MonthAverage = model.currentAccount.MonthAverage,
-                Interest = model.currentAccount.Interest
-
-            };
-            var currentAccount = currentAccountDTO.Adapt<CurrentAccount>();
-            _context.CurrentAccounts.Add(currentAccount);
-        }
-        else
-        {
-            throw new Exception("Invalid account type");
-        }
-
-        await _context.SaveChangesAsync();
-
-        var accountDTO = accountToCreate.Adapt<AccountDTO>();
-        return accountDTO;
+        return accountDTOs;
     }
 }
 //    public async Task<AccountDTO> Add(CreateAccountModel model)

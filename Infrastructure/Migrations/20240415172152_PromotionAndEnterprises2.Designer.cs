@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(BootcampContext))]
-    partial class BootcampContextModelSnapshot : ModelSnapshot
+    [Migration("20240415172152_PromotionAndEnterprises2")]
+    partial class PromotionAndEnterprises2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -291,7 +294,15 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
 
+                    b.Property<int>("PromotionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PromotionId1")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("PromotionId1");
 
                     b.ToTable("Enterprises", (string)null);
                 });
@@ -452,6 +463,17 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Bank");
+                });
+
+            modelBuilder.Entity("Core.Entities.Enterprise", b =>
+                {
+                    b.HasOne("Core.Entities.Promotion", "Promotion")
+                        .WithMany()
+                        .HasForeignKey("PromotionId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Promotion");
                 });
 
             modelBuilder.Entity("Core.Entities.Movement", b =>

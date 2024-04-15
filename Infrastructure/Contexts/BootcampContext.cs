@@ -1,4 +1,6 @@
-﻿using Core.Entities;
+﻿
+using Core.Data.Configurations;
+using Core.Entities;
 using Core.EntityConfigurations;
 using Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +34,12 @@ public partial class BootcampContext : DbContext
 
     public virtual DbSet<CreditCard> CreditCards { get; set; }
 
+    public virtual DbSet<Promotion> Promotions { get; set; }    
+
+    public virtual DbSet<Enterprise> Enterprises { get; set; }
+
+
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -50,6 +58,21 @@ public partial class BootcampContext : DbContext
         modelBuilder.ApplyConfiguration(new CurrencyConfiguration());
 
         modelBuilder.ApplyConfiguration(new CreditCardConfiguration());
+
+        modelBuilder.ApplyConfiguration(new PromotionConfiguration());
+
+        modelBuilder.ApplyConfiguration(new EnterpriseConfiguration());
+
+
+
+
+
+
+
+
+
+
+
 
         OnModelCreatingPartial(modelBuilder);
     }

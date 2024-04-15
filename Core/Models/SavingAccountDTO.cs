@@ -10,7 +10,4 @@ public class SavingAccountDTO
     public string SavingType { get; set; }
 
     public string HolderName { get; set; } = string.Empty;
-    public int AccountId { get; set; }
-
-    //public AccountDTO Account { get; set; } = null!;
 }

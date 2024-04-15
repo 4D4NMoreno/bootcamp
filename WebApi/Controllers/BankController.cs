@@ -9,12 +9,10 @@ namespace WebApi.Controllers;
 public class BankController : BaseApiController
 {
     private readonly IBankService _service;
-    private readonly IJwtProvider _jwtProvider;
 
-    public BankController(IBankService service, IJwtProvider jwtProvider)
+    public BankController(IBankService service)
     {
         _service = service;
-        _jwtProvider = jwtProvider;
     }
 
     [HttpPost]
