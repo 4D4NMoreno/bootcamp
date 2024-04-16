@@ -1,27 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Core.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Core.Entities;
 
-namespace Core.Data.Configurations
+namespace Infrastructure.Configurations;
+
+public class PromotionConfiguration : IEntityTypeConfiguration<Promotion>
 {
-    public class PromotionConfiguration : IEntityTypeConfiguration<Promotion>
+    public void Configure(EntityTypeBuilder<Promotion> entity)
     {
-        public void Configure(EntityTypeBuilder<Promotion> builder)
-        {
-            builder.ToTable("Promotions"); // Nombre de la tabla en la base de datos
+        entity.HasKey(p => p.Id);
 
-            builder.HasKey(p => p.Id); // Clave primaria
+        entity
+            .Property(p => p.Name)
+            .IsRequired();
 
-            builder.Property(p => p.Name)
-                .IsRequired()
-                .HasMaxLength(100); // Longitud máxima de 100 caractere
+        entity
+            .Property(p => p.Start)
+            .IsRequired();
 
-            builder
-               .HasOne(p => p.Enterprise)
-            .WithMany(p => p.Promotions)
-            .HasForeignKey(d => d.EnterpriseId);
+        entity
+            .Property(p => p.End)
+            .IsRequired();
 
+        entity
+            .Property(p => p.Discount)
+            .IsRequired();
 
-        }
+        entity
+            .HasMany(p => p.PromotionsEnterprises)
+            .WithOne(pe => pe.Promotion)
+            .HasForeignKey(pe => pe.PromotionId);
     }
 }

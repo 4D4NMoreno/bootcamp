@@ -7,4 +7,10 @@ public interface IPromotionService
 {
     Task<PromotionDTO> Add(CreatePromotionModel model);
 
+    Task<PromotionDTO> Update(UpdatePromotionModel model);
+
+    Task<bool> Delete(int id);
+
+    Task<List<PromotionDTO>> GetAll();
+
 }

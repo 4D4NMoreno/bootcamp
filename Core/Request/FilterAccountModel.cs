@@ -4,7 +4,7 @@ namespace Core.Request;
 
 public class FilterAccountModel
 {
-    public string Number { get; set; }
-    public AccountType Type { get; set; }
-    public int CurrencyId { get; set; }
+    public string? Number { get; set; }
+    public AccountType? Type { get; set; }
+    public int? CurrencyId { get; set; }
 }

@@ -7,4 +7,6 @@ public interface IEnterpriseRepository
 {
     Task<EnterpriseDTO> Add(CreateEnterpriseModel model);
 
+    Task<List<EnterpriseDTO>> GetAll();
+
 }

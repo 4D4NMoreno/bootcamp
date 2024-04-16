@@ -1,36 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Core.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Core.Entities;
 
-namespace Core.Data.Configurations
+namespace Infrastructure.Configurations;
+
+public class EnterpriseConfiguration : IEntityTypeConfiguration<Enterprise>
 {
-    public class EnterpriseConfiguration : IEntityTypeConfiguration<Enterprise>
+    public void Configure(EntityTypeBuilder<Enterprise> entity)
     {
-        public void Configure(EntityTypeBuilder<Enterprise> builder)
-        {
-            builder.ToTable("Enterprises");
+        entity.HasKey(e => e.Id);
 
-            builder.HasKey(e => e.Id);
+        entity
+            .Property(e => e.Name)
+            .IsRequired();
 
-            builder.Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(100);
+        entity
+            .Property(e => e.Address)
+            .IsRequired();
 
-            builder.Property(e => e.Address)
-                .IsRequired()
-                .HasMaxLength(200);
+        entity
+            .Property(e => e.Phone)
+            .IsRequired();
 
-            builder.Property(e => e.Phone)
-                .HasMaxLength(20);
+        entity
+            .Property(e => e.Email)
+            .IsRequired();
 
-            builder.Property(e => e.Mail)
-                .HasMaxLength(100);
-
-
-            builder.HasMany(e => e.Promotions)
-                .WithOne(p => p.Enterprise)
-                .HasForeignKey(p => p.EnterpriseId)
-                .OnDelete(DeleteBehavior.Cascade);
-        }
+        entity
+            .HasMany(e => e.PromotionsEnterprises)
+            .WithOne(pe => pe.Enterprise)
+            .HasForeignKey(pe => pe.EnterpriseId);
     }
 }

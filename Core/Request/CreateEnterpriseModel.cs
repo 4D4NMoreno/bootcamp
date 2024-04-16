@@ -10,5 +10,5 @@ public class CreateEnterpriseModel
 
     public string? Phone { get; set; }
 
-    public string? Mail { get; set; }
+    public string? Email { get; set; }
 }

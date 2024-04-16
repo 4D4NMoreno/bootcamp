@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Core.Models;
 using Core.Request;
@@ -16,30 +17,89 @@ public class PromotionRepository : IPromotionRepository
     {
         _context = context;
     }
-
     public async Task<PromotionDTO> Add(CreatePromotionModel model)
     {
+
         var promotion = model.Adapt<Promotion>();
 
-        // Agrega la promoción a la base de datos
-        _context.Promotions.Add(promotion);
-        await _context.SaveChangesAsync();
 
-        // Asocia la promoción a cada empresa especificada en la lista de IDs
-        foreach (var enterpriseId in model.EnterpriseIds)
+        foreach (int enterpriseId in model.EnterpriseIds)
         {
-            var enterprise = await _context.Enterprises.FindAsync(enterpriseId);
-            if (enterprise != null)
+            var promotionEnterprise = new PromotionEnterprise
             {
-                enterprise.Promotions.Add(promotion);
-            }
+                Promotion = promotion,
+                EnterpriseId = enterpriseId
+            };
+            _context.PromotionEnterprises.Add(promotionEnterprise);
         }
 
-        // Guarda los cambios en la base de datos
+        _context.Promotions.Add(promotion);
+
         await _context.SaveChangesAsync();
 
-        // Mapea la promoción a PromotionDTO y devuélvela
-        return promotion.Adapt<PromotionDTO>();
+        var createdPromotion = await _context.Promotions
+            .Include(p => p.PromotionsEnterprises)
+            .ThenInclude(pe => pe.Enterprise)
+            .FirstOrDefaultAsync(a => a.Id == promotion.Id);
+
+
+        var promotionDTO = promotion.Adapt<PromotionDTO>();
+
+        return promotionDTO;
     }
 
+    public async Task<bool> Delete(int id)
+    {
+        var promotion = await _context.Promotions.FindAsync(id);
+
+        if (promotion == null)
+        { 
+            throw new NotFoundException($"Promotion with id: {id} not found"); 
+        }
+        _context.Promotions.Remove(promotion);
+
+        var result = await _context.SaveChangesAsync();
+
+        return result > 0;
+    }
+
+    public async Task<List<PromotionDTO>> GetAll()
+    {
+        var enterprises = await _context.Promotions
+        .Include(e => e.PromotionsEnterprises)
+            .ThenInclude(pe => pe.Enterprise)
+        .Select(e => new PromotionDTO
+        {
+            Id = e.Id,
+            Name = e.Name,
+            Start = e.Start,
+            End = e.End,
+            Discount = e.Discount,
+            Enterprises = e.PromotionsEnterprises.Select(pe => pe.Enterprise.Adapt<EnterpriseDTO>()).ToList()
+        })
+        .ToListAsync();
+
+        return enterprises;
+    }
+
+    public async Task<PromotionDTO> Update(UpdatePromotionModel model)
+    {
+
+
+        var promotion = await _context.Promotions.FindAsync(model.Id);
+
+        if (promotion == null)
+        {
+            throw new Exception("La promoción no fue encontrada."); 
+        }
+
+        promotion = model.Adapt(promotion);
+
+        _context.Promotions.Update(promotion);
+        await _context.SaveChangesAsync();
+
+        var promotionDTO = promotion.Adapt<PromotionDTO>();
+
+        return promotionDTO;
+    }
 }

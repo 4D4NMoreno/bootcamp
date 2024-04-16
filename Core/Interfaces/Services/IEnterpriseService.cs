@@ -6,4 +6,6 @@ namespace Core.Interfaces.Services;
 public interface IEnterpriseService
 {
     Task<EnterpriseDTO> Add(CreateEnterpriseModel model);
+
+    Task<List<EnterpriseDTO>> GetAll();
 }

@@ -10,22 +10,19 @@ namespace Infrastructure.Mappings
     {
         public void Register(TypeAdapterConfig config)
         {
-            // De la solicitud de creación a la entidad
             config.NewConfig<CreateEnterpriseModel, Enterprise>()
                 .Map(dest => dest.Name, src => src.Name)
                 .Map(dest => dest.Address, src => src.Address)
                 .Map(dest => dest.Phone, src => src.Phone)
-                .Map(dest => dest.Mail, src => src.Mail);
+                .Map(dest => dest.Email, src => src.Email);
 
-
-            // De la entidad al DTO
             config.NewConfig<Enterprise, EnterpriseDTO>()
                 .Map(dest => dest.Id, src => src.Id)
                 .Map(dest => dest.Name, src => src.Name)
                 .Map(dest => dest.Address, src => src.Address)
                 .Map(dest => dest.Phone, src => src.Phone)
-                .Map(dest => dest.Mail, src => src.Mail);
-                
+                .Map(dest => dest.Email, src => src.Email);
+                //.Map(dest => dest.Promotions, src => src.PromotionsEnterprises.Select(pe => pe.Promotion));
         }
     }
 }

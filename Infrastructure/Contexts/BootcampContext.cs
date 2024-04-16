@@ -1,5 +1,4 @@
 ﻿
-using Core.Data.Configurations;
 using Core.Entities;
 using Core.EntityConfigurations;
 using Infrastructure.Configurations;
@@ -38,6 +37,9 @@ public partial class BootcampContext : DbContext
 
     public virtual DbSet<Enterprise> Enterprises { get; set; }
 
+    public virtual DbSet<PromotionEnterprise> PromotionEnterprises { get; set; }
+
+
 
 
 
@@ -63,16 +65,7 @@ public partial class BootcampContext : DbContext
 
         modelBuilder.ApplyConfiguration(new EnterpriseConfiguration());
 
-
-
-
-
-
-
-
-
-
-
+        modelBuilder.ApplyConfiguration(new PromotionEnterpriseConfiguration());
 
         OnModelCreatingPartial(modelBuilder);
     }

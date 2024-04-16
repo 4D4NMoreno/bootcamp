@@ -27,6 +27,6 @@ public class UpdateCreditCardModel
 
     public int CurrencyId { get; set; }
 
-    public string CreditCardStatus { get; set; }
+    public string? CreditCardStatus { get; set; }
 
 }

@@ -10,7 +10,6 @@ public class AccountMappingConfiguration : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        //Del Creation object hacia la entidad
         config.NewConfig<CreateAccountRequest, Account>()
             .Map(dest => dest.Holder, src => src.Holder)
             .Map(dest => dest.Number, src => src.Number)
@@ -26,7 +25,6 @@ public class AccountMappingConfiguration : IRegister
             .Map(dest => dest.MonthAverage, src => src.MonthAverage)
             .Map(dest => dest.Interest, src => src.Interest);
 
-        //Entidad hacia el DTO
         config.NewConfig<Account, AccountDTO>()
             .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.Holder, src => src.Holder)

@@ -17,4 +17,8 @@ public class EnterpriseService : IEnterpriseService
     {
         return await _repository.Add(model);
     }
+    public async Task<List<EnterpriseDTO>> GetAll()
+    {
+        return await _repository.GetAll();
+    }
 }

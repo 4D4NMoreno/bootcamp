@@ -16,7 +16,7 @@ public class CreateCustomerModelValidation : AbstractValidator<CreateCustomerMod
             .NotNull().WithMessage("El BankId es obligatorio.");
 
         RuleFor(x => x.DocumentNumber)
-            .NotNull().WithMessage("Document cannot be nul")
+            .NotNull().WithMessage("Document cannot be null")
             .NotEmpty().WithMessage("Document canno be empty");
 
         RuleFor(x => x.Mail)
