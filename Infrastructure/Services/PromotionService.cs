@@ -34,4 +34,9 @@ public class PromotionService : IPromotionService
     {
         return await _repository.GetAll();
     }
+
+    public async Task<PromotionDTO> GetById(int id)
+    {
+        return await _repository.GetById(id);
+    }
 }

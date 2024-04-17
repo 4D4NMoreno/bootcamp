@@ -102,4 +102,22 @@ public class PromotionRepository : IPromotionRepository
 
         return promotionDTO;
     }
+    public async Task<PromotionDTO> GetById(int id)
+    {
+        var query = _context.Promotions
+                  .Include(a => a.PromotionsEnterprises)
+                  .ThenInclude(pe => pe.Enterprise)
+                  .AsQueryable();
+
+        var promotion = await query.FirstOrDefaultAsync(a => a.Id == id);
+
+        if (promotion is null)
+            throw new NotFoundException($"Promotion with id: {id} not found");
+       
+        var promotionDTO = promotion.Adapt<PromotionDTO>();
+        promotionDTO.Enterprises = promotion.PromotionsEnterprises
+        .Select(pe => pe.Enterprise.Adapt<EnterpriseDTO>())
+        .ToList();
+        return promotionDTO;
+    }
 }

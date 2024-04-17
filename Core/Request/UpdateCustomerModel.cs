@@ -9,8 +9,6 @@ public class UpdateCustomerModel
     public string? Address { get; set; }
     public string? Mail { get; set; }
     public string? Phone { get; set; }
-
-
     public string? CustomerStatus { get; set; }
 
 

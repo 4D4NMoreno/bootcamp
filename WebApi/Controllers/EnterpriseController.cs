@@ -24,5 +24,10 @@ namespace WebApi.Controllers
         {
             return Ok(await _service.GetAll());
         }
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update([FromBody] UpdateEnterpriseModel model)
+        {
+            return Ok(await _service.Update(model));
+        }
     }
 }

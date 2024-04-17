@@ -18,7 +18,9 @@ public class AccountMappingConfiguration : IRegister
             .Map(dest => dest.Type, src => src.AccountType);
 
         config.NewConfig<CreateSavingAccount, SavingAccount>()
-            .Map(dest => dest.SavingType, src => src.SavingType);
+            .Map(dest => dest.SavingType, src => src.SavingType)
+            .Map(dest => dest.HolderName, src => src.HolderName);
+
 
         config.NewConfig<CreateCurrentAccount, CurrentAccount>()
             .Map(dest => dest.OperationalLimit, src => src.OperationalLimit)
@@ -45,7 +47,8 @@ public class AccountMappingConfiguration : IRegister
 
         config.NewConfig<SavingAccount, SavingAccountDTO>()
             .Map(dest => dest.Id, src => src.Id)
-            .Map(dest => dest.SavingType, src => src.SavingType.ToString());
+            .Map(dest => dest.SavingType, src => src.SavingType.ToString())
+            .Map(dest => dest.HolderName, src => src.HolderName);
 
         config.NewConfig<CurrentAccount, CurrentAccountDTO>()
             .Map(dest => dest.Id, src => src.Id)

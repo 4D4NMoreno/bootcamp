@@ -34,5 +34,12 @@ namespace WebApi.Controllers
         {
             return Ok(await _service.GetAll());
         }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById([FromRoute] int id)
+        {
+            var customer = await _service.GetById(id);
+            return Ok(customer);
+        }
+
     }
 }

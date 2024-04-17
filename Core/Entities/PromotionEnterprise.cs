@@ -2,7 +2,6 @@
 
 public class PromotionEnterprise
 {
-    //public int Id { get; set; }
     public int PromotionId { get; set; }
     public int EnterpriseId { get; set; }
     public Promotion Promotion { get; set; } = null!;

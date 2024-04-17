@@ -21,4 +21,9 @@ public class EnterpriseService : IEnterpriseService
     {
         return await _repository.GetAll();
     }
+
+    public async Task<EnterpriseDTO> Update(UpdateEnterpriseModel model)
+    {
+        return await _repository.Update(model);
+    }
 }

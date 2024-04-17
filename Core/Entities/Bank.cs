@@ -8,4 +8,6 @@ public class Bank
     public string Mail { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
     public virtual ICollection<Customer> Customers { get; set; } = new List<Customer>();
+
+    public ICollection<Product> Products { get; set; } = new List<Product>();
 }

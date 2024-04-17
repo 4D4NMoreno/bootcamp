@@ -13,4 +13,6 @@ public interface IPromotionService
 
     Task<List<PromotionDTO>> GetAll();
 
+    Task<PromotionDTO> GetById(int id);
+
 }
