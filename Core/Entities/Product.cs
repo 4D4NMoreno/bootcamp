@@ -3,14 +3,10 @@ using Core.Constants;
 
 namespace Core.Entities;
 
-public class Product
+public class ProductRequest
 {
     public int Id { get; set; }
-    public ProductType ProductType { get; set; } = ProductType.Credit;
-
-    public int BankId { get; set; }
-    public Bank Bank { get; set; }
-
+    public ProductName ProductName { get; set; } = ProductName.Credit;
 
     public int CustomerId { get; set; }
     public Customer Customer { get; set; }
@@ -19,12 +15,10 @@ public class Product
     public int CurrencyId { get; set; }
     public Currency Currency { get; set; }
 
+    public DateTime ApplicationDate { get; set; }
+    public DateTime ApprovalDate { get; set; }
 
-    public CreditProduct CreditProduct { get; set; }
-
-    public CreditCardProduct CreditCardProduct { get; set; }
-
-    public CurrentAccountProduct CurrentAccountProduct { get; set; }
+    public string Description { get; set; }
 
 
 }

@@ -4,10 +4,12 @@ namespace Core.Request;
 
 public class BankProductRequest
 {
-    public ProductType ProductType { get; set; }
-    public CreateCreditProduct CreateCreditProduct { get; set;}
-    public CreateCreditCardProduct CreateCreditCardProduct { get; set; }
-    public CreateCurrentAccountProduct CreateCurrentAccountProduct { get; set; }
+    public ProductName ProductName { get; set; }
+    public int CustomerId { get; set; }
+    public int CurrencyId { get; set; }
+    public string Description { get; set; }
 
+    public DateTime ApplicationDate { get; set; }
+    public DateTime? ApprovalDate { get; set; }
 }
 

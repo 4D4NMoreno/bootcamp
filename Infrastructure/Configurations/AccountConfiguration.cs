@@ -28,6 +28,12 @@ public class AccountConfiguration : IEntityTypeConfiguration<Account>
             .WithOne(movement => movement.Account)
             .HasForeignKey(movement => movement.AccountId);
 
+        
+        entity
+                .HasMany(account => account.Transactions)
+                .WithOne(transaction => transaction.Account)
+                .HasForeignKey(transaction => transaction.AccountId);
+
         entity
             .HasOne(account => account.SavingAccount)
             .WithOne(savingAccount => savingAccount.Account)

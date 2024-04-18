@@ -14,25 +14,25 @@ namespace WebApi.Controllers
             _service = service;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateCreditCardModel request)
-        {
-            return Ok(await _service.Add(request));
-        }
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            var creditCard = await _service.GetAll();
-            return Ok(creditCard);
-        }
-        [HttpPut("Actualizar")]
-        public async Task<IActionResult> Update([FromBody] UpdateCreditCardModel model)
-        {
+        //[HttpPost]
+        //public async Task<IActionResult> Create([FromBody] CreateCreditCardModel request)
+        //{
+        //    return Ok(await _service.Add(request));
+        //}
+        //[HttpGet]
+        //public async Task<IActionResult> GetAll()
+        //{
+        //    var creditCard = await _service.GetAll();
+        //    return Ok(creditCard);
+        //}
+        //[HttpPut("Actualizar")]
+        //public async Task<IActionResult> Update([FromBody] UpdateCreditCardModel model)
+        //{
 
 
-            return Ok(await _service.Update(model));
+        //    return Ok(await _service.Update(model));
 
 
-        }
+        //}
     }
 }

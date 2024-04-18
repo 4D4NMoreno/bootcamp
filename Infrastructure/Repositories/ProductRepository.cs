@@ -6,6 +6,7 @@ using Core.Request;
 using Infrastructure.Contexts;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Principal;
 
 namespace Infrastructure.Repositories;
 
@@ -17,33 +18,24 @@ public class ProductRepository : IProductRepository
     {
         _context = context;
     }
-    public async Task<ProductDTO> Add(BankProductRequest request)
+    public async Task<ProductRequestDTO> Add(BankProductRequest request)
     {
-        var product = request.Adapt<Product>();
+        
+        var product = request.Adapt<ProductRequest>();
 
-        if (product.ProductType == ProductType.Credit)
-        {
-            product.CreditProduct = request.CreateCreditProduct.Adapt<CreditProduct>();
-        }
-        else if (product.ProductType == ProductType.CreditCard)
-        {
-            product.CreditCardProduct = request.CreateCreditCardProduct.Adapt<CreditCardProduct>();
-        }
-        else if (product.ProductType == ProductType.CurrentAccount)
-        {
-            product.CurrentAccountProduct = request.CreateCurrentAccountProduct.Adapt<CurrentAccountProduct>();
-        }
-
-        _context.Products.Add(product);
+        _context.ProductRequests.Add(product);
 
         await _context.SaveChangesAsync();
 
-        var createdProduct = await _context.Products
-            .Include(p => p.CreditProduct)
-            .Include(p => p.CreditCardProduct)
-            .Include(p => p.CurrentAccountProduct)
-            .FirstOrDefaultAsync();
+        var createdProduct = await _context.ProductRequests
+        .Include(pr => pr.Currency) 
+        .Include(pr => pr.Customer) 
+            .ThenInclude(c => c.Bank) 
+        .FirstOrDefaultAsync(pr => pr.Id == product.Id);
 
-        return createdProduct.Adapt<ProductDTO>();
+
+        var productDTO = createdProduct.Adapt<ProductRequestDTO>();
+
+        return productDTO;
     }
 }

@@ -5,5 +5,5 @@ namespace Core.Interfaces.Services;
 
 public interface IProductService
 {
-    Task<ProductDTO> Add(BankProductRequest request);
+    Task<ProductRequestDTO> Add(BankProductRequest request);
 }

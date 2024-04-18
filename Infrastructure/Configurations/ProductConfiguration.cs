@@ -4,26 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Configurations
 {
-    public class ProductConfiguration : IEntityTypeConfiguration<Product>
+    public class ProductConfiguration : IEntityTypeConfiguration<ProductRequest>
     {
-        public void Configure(EntityTypeBuilder<Product> entity)
+        public void Configure(EntityTypeBuilder<ProductRequest> entity)
         {
             entity.HasKey(p => p.Id);
 
-            entity
-            .HasOne(product => product.CreditProduct)
-            .WithOne(CreditProduct => CreditProduct.product)
-            .HasForeignKey<CreditProduct>(CreditProduct => CreditProduct.ProductId);
-
-            entity
-            .HasOne(product => product.CreditCardProduct)
-            .WithOne(CreditProduct => CreditProduct.product)
-            .HasForeignKey<CreditProduct>(CreditProduct => CreditProduct.ProductId);
-
-            entity
-            .HasOne(product => product.CurrentAccountProduct)
-            .WithOne(CreditProduct => CreditProduct.product)
-            .HasForeignKey<CreditProduct>(CreditProduct => CreditProduct.ProductId);
+            
         }
     }
 }

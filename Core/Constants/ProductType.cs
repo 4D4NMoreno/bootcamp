@@ -1,6 +1,6 @@
 ﻿namespace Core.Constants;
 
-public enum ProductType
+public enum ProductName
 {
     Credit,
     CreditCard,

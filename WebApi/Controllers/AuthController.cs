@@ -14,64 +14,64 @@ public class AuthController : BaseApiController
         _jwtProvider = jwtProvider;
     }
 
-    [HttpGet("generate-token")]
-    [AllowAnonymous]
-    public IActionResult Generate([FromQuery] IEnumerable<string> roles)
-    {
+    //[HttpGet("generate-token")]
+    //[AllowAnonymous]
+    //public IActionResult Generate([FromQuery] IEnumerable<string> roles)
+    //{
 
-        if (roles == null || !roles.Any() || !roles.All(role => _validRoles.Contains(role)))
-        {
-            return NotFound("Se debe proporcionar uno o más roles válidos");
-        }
-        //if (roles == null || !roles.Any())
-        //{
-        //    return BadRequest("Se deben proporcionar al menos un rol.");
-        //}
+    //    if (roles == null || !roles.Any() || !roles.All(role => _validRoles.Contains(role)))
+    //    {
+    //        return NotFound("Se debe proporcionar uno o más roles válidos");
+    //    }
+    //    //if (roles == null || !roles.Any())
+    //    //{
+    //    //    return BadRequest("Se deben proporcionar al menos un rol.");
+    //    //}
 
-        string token = _jwtProvider.Generate(roles);
+    //    string token = _jwtProvider.Generate(roles);
 
-        return Ok(token);
-    }
+    //    return Ok(token);
+    //}
 
-    [HttpGet("protected-endpoint")]
-    [Authorize]
-    public IActionResult ProtectedEndpoint()
-    {
+    //[HttpGet("protected-endpoint")]
+    //[Authorize]
+    //public IActionResult ProtectedEndpoint()
+    //{
 
-        return Ok("Esto es un endpoint protegido");
-    }
+    //    return Ok("Esto es un endpoint protegido");
+    //}
 
-    [HttpGet("protected-endpoint-seguridad")]
-    [Authorize(Roles = "Securidad")]
-    public IActionResult ProtectedEndpoint2()
-    {
+    //[HttpGet("protected-endpoint-seguridad")]
+    //[Authorize(Roles = "Securidad")]
+    //public IActionResult ProtectedEndpoint2()
+    //{
 
-        return Ok("Esto solo puede acceder un miembro de Seguridad");
-    }
+    //    return Ok("Esto solo puede acceder un miembro de Seguridad");
+    //}
 
-    [HttpGet("protected-endpoint-admin")]
-    [Authorize(Roles = "Admin")]
-    public IActionResult ProtectedEndpoint3()
-    {
+    //[HttpGet("protected-endpoint-admin")]
+    //[Authorize(Roles = "Admin")]
+    //public IActionResult ProtectedEndpoint3()
+    //{
 
-        return Ok("Esto solo puede acceder un Administrador");
-    }
+    //    return Ok("Esto solo puede acceder un Administrador");
+    //}
 
-    [HttpGet("protected-endpoint-ambos")]
-    [Authorize(Roles = "Admin, Securidad")]
-    public IActionResult ProtectedEndpoint4()
-    {
+    //[HttpGet("protected-endpoint-ambos")]
+    //[Authorize(Roles = "Admin, Securidad")]
+    //public IActionResult ProtectedEndpoint4()
+    //{
 
-        return Ok("Esto endpoint pueden ver Seguridad y Admin");
-    }
+    //    return Ok("Esto endpoint pueden ver Seguridad y Admin");
+    //}
 
-    [HttpGet("protected-endpoint-clientes")]
-    [Authorize(Roles = "Cliente")]
-    public IActionResult ProtectedEndpoint5()
-    {
+    //[HttpGet("protected-endpoint-clientes")]
+    //[Authorize(Roles = "Cliente")]
+    //public IActionResult ProtectedEndpoint5()
+    //{
 
-        return Ok("Esto endpoint solo pueden ver Cliente");
-    }
+    //    return Ok("Esto endpoint solo pueden ver Cliente");
+    //}
 
 
 }
