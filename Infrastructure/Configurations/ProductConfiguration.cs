@@ -8,21 +8,22 @@ namespace Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Product> entity)
         {
-            entity.HasKey(p => new { p.CreditProductId, p.CreditCardProductId, p.CurrentAccountProductId });
+            entity.HasKey(p => p.Id);
 
             entity
-                 .HasOne(e => e.CreditProduct)
-                 .WithMany(e => e.products)
-                 .HasForeignKey(e => e.CreditProductId);
+            .HasOne(product => product.CreditProduct)
+            .WithOne(CreditProduct => CreditProduct.product)
+            .HasForeignKey<CreditProduct>(CreditProduct => CreditProduct.ProductId);
 
             entity
-                 .HasOne(e => e.CreditCardProduct)
-                 .WithMany(e => e.products)
-                 .HasForeignKey(e => e.CreditCardProductId);
+            .HasOne(product => product.CreditCardProduct)
+            .WithOne(CreditProduct => CreditProduct.product)
+            .HasForeignKey<CreditProduct>(CreditProduct => CreditProduct.ProductId);
+
             entity
-                 .HasOne(e => e.CurrentAccountProduct)
-                 .WithMany(e => e.products)
-                 .HasForeignKey(e => e.CurrentAccountProductId);
+            .HasOne(product => product.CurrentAccountProduct)
+            .WithOne(CreditProduct => CreditProduct.product)
+            .HasForeignKey<CreditProduct>(CreditProduct => CreditProduct.ProductId);
         }
     }
 }

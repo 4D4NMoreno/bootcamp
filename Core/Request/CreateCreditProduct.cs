@@ -7,4 +7,10 @@ public class CreateCreditProduct
     public DateTime ApprovalDate { get; set; }
     public int? Term { get; set; }
 
+    public int CustomerId { get; set; }
+
+    public int CurrencyId { get; set; }
+
+    public int BankId { get; set; }
+
 }

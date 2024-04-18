@@ -18,7 +18,10 @@ public class ProductMappingConfiguration : IRegister
             .Map(dest => dest.Amount, src => src.Amount)
             .Map(dest => dest.RequestDate, src => src.RequestDate)
             .Map(dest => dest.ApprovalDate, src => src.ApprovalDate)
-            .Map(dest => dest.Term, src => src.Term);
+            .Map(dest => dest.Term, src => src.Term)
+            .Map(dest => dest.CustomerId, src => src.CustomerId)
+            .Map(dest => dest.CurrencyId, src => src.CurrencyId)
+            .Map(dest => dest.BankId, src => src.BankId);
 
         config.NewConfig<Product, ProductDTO>()
             .Map(dest => dest.ProductType, src => src.ProductType)
@@ -29,15 +32,16 @@ public class ProductMappingConfiguration : IRegister
 
 
 
-        config.NewConfig<SavingAccount, SavingAccountDTO>()
+        config.NewConfig<CreditProduct, CreditProductDTO>()
             .Map(dest => dest.Id, src => src.Id)
-            .Map(dest => dest.SavingType, src => src.SavingType.ToString())
-            .Map(dest => dest.HolderName, src => src.HolderName);
+            .Map(dest => dest.Amount, src => src.Amount)
+            .Map(dest => dest.Term, src => src.Term)
+            .Map(dest => dest.RequestDate, src => src.RequestDate)
+            .Map(dest => dest.ApprovalDate, src => src.ApprovalDate)
+            .Map(dest => dest.Bank, src => src.Bank)
+            .Map(dest => dest.Currency, src => src.Currency)
+            .Map(dest => dest.Customer, src => src.Customers)
+            .Map(dest => dest.Bank, src => src.Bank);
 
-        config.NewConfig<CurrentAccount, CurrentAccountDTO>()
-            .Map(dest => dest.Id, src => src.Id)
-            .Map(dest => dest.OperationalLimit, src => src.OperationalLimit)
-            .Map(dest => dest.MonthAverage, src => src.MonthAverage)
-            .Map(dest => dest.Interest, src => src.Interest);
     }
 }

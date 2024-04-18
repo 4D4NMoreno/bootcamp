@@ -41,7 +41,12 @@ namespace Infrastructure.Configurations
                 .WithMany()
                 .HasForeignKey(cap => cap.CustomerId);
 
-    
+            builder
+            .HasOne(d => d.product)
+            .WithOne(p => p.CurrentAccountProduct)
+            .HasForeignKey<CurrentAccountProduct>(d => d.ProductId);
+
+
         }
     }
 }

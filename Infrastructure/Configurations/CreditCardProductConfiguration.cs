@@ -41,6 +41,11 @@ namespace Infrastructure.Configurations
                 .WithMany()
                 .HasForeignKey(ccp => ccp.CustomerId);
 
+            builder
+            .HasOne(d => d.product)
+            .WithOne(p => p.CreditCardProduct)
+            .HasForeignKey<CreditCardProduct>(d => d.ProductId);
+
 
         }
     }
