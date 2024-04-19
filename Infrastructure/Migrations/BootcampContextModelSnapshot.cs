@@ -65,7 +65,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Accounts");
+                    b.ToTable("Accounts", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Bank", b =>
@@ -208,7 +208,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("AccountId")
                         .IsUnique();
 
-                    b.ToTable("CurrentAccounts");
+                    b.ToTable("CurrentAccounts", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Customer", b =>
@@ -291,7 +291,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Enterprises");
+                    b.ToTable("Enterprises", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Movement", b =>
@@ -326,7 +326,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("Movements");
+                    b.ToTable("Movements", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.ProductRequest", b =>
@@ -362,7 +362,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("ProductRequests");
+                    b.ToTable("ProductRequests", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Promotion", b =>
@@ -388,7 +388,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Promotions");
+                    b.ToTable("Promotions", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.PromotionEnterprise", b =>
@@ -403,7 +403,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("EnterpriseId");
 
-                    b.ToTable("PromotionEnterprises");
+                    b.ToTable("PromotionEnterprises", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.SavingAccount", b =>
@@ -431,7 +431,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("AccountId")
                         .IsUnique();
 
-                    b.ToTable("SavingAccounts");
+                    b.ToTable("SavingAccounts", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Transaction", b =>
@@ -478,7 +478,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Transactions", (string)null);
                 });
 
             modelBuilder.Entity("Core.Entities.Account", b =>

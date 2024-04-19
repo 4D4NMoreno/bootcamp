@@ -33,7 +33,7 @@ public class TransactionRepository : ITransactionRepository
                 a.Customer.Bank.Name == transferRequest.DestinationBank &&
                 a.Number == transferRequest.DestinationAccountNumber &&
                 a.Customer.DocumentNumber == transferRequest.DestinationDocumentNumber &&
-                a.Currency.Id == transferRequest.CurrencyId)
+                a.CurrencyId == transferRequest.CurrencyId)
     .FirstOrDefaultAsync();
 
         if (destinationAccount == null)
@@ -47,12 +47,18 @@ public class TransactionRepository : ITransactionRepository
             
             return false;
         }
+        var currency = await _context.Currencies.FindAsync(destinationAccount.CurrencyId);
         var transfer = new Transaction
         {
             OriginAccountId = transferRequest.OriginAccountId,
             DestinationAccountId = destinationAccount.Id,
+            //AccountId = transferRequest.OriginAccountId, 
             Amount = transferRequest.Amount,
-            TransactionDateTime = DateTime.Now
+            //TransactionDateTime = DateTime.UtcNow,
+            DestinationAccountNumber = destinationAccount.Number,
+            DestinationDocumentNumber = destinationAccount.Customer.DocumentNumber,
+            CurrencyId = transferRequest.CurrencyId,
+            //Account = destinationAccount
         };
 
         originAccount.Balance -= transferRequest.Amount;
@@ -63,7 +69,7 @@ public class TransactionRepository : ITransactionRepository
             AccountId = transferRequest.OriginAccountId,
             Destination = transferRequest.DestinationAccountNumber,
             Amount = -transferRequest.Amount,
-            TransferredDateTime = DateTime.Now,
+            //TransferredDateTime = DateTime.UtcNow,
             TransferStatus = TransferStatus.Done
         };
 
@@ -71,7 +77,7 @@ public class TransactionRepository : ITransactionRepository
         {
             AccountId = destinationAccount.Id,
             Amount = transferRequest.Amount,
-            TransferredDateTime = DateTime.Now,
+            //TransferredDateTime = DateTime.UtcNow,
             TransferStatus = TransferStatus.Done
         };
 

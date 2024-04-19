@@ -21,7 +21,7 @@ namespace Infrastructure.Mappings
             // Mapeo de Transaction a TransactionDTO
             config.NewConfig<Transaction, TransactionDTO>()
                 .Map(dest => dest.Id, src => src.Id)
-                .Map(dest => dest.Account, src => src.Account)
+                //.Map(dest => dest.Account, src => src.Account)
                 .Map(dest => dest.Amount, src => src.Amount)
                 .Map(dest => dest.OriginAccountId, src => src.OriginAccountId)
                 .Map(dest => dest.DestinationAccountId, src => src.DestinationAccountId)

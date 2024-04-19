@@ -31,11 +31,11 @@ namespace Infrastructure.Configurations
                 .WithMany(c => c.Transactions)
                 .HasForeignKey(t => t.CurrencyId);
 
-            builder
-                .HasOne(t => t.Account)
-                .WithMany(a => a.Transactions)
-                .HasForeignKey(t => t.AccountId)
-                .OnDelete(DeleteBehavior.Restrict); 
+            //builder
+            //    .HasOne(t => t.Account)
+            //    .WithMany(a => a.Transactions)
+            //    .HasForeignKey(t => t.AccountId)
+            //    .OnDelete(DeleteBehavior.Restrict); 
         }
     }
 }
