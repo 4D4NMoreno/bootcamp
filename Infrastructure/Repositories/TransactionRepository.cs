@@ -27,17 +27,18 @@ public class TransactionRepository : ITransactionRepository
         {
             return false;
         }
-
         var destinationAccount = await _context.Accounts
-            .Where(a => a.Customer.Bank.Name == transferRequest.DestinationBank &&
-                        a.Number == transferRequest.DestinationAccountNumber &&
-                        a.Customer.DocumentNumber == transferRequest.DestinationDocumentNumber &&
-                        a.CurrencyId == transferRequest.CurrencyId)
-            .FirstOrDefaultAsync();
+    .Include(a => a.Customer.Bank)
+    .Where(a => a.Id == transferRequest.DestinationAccountId &&
+                a.Customer.Bank.Name == transferRequest.DestinationBank &&
+                a.Number == transferRequest.DestinationAccountNumber &&
+                a.Customer.DocumentNumber == transferRequest.DestinationDocumentNumber &&
+                a.Currency.Id == transferRequest.CurrencyId)
+    .FirstOrDefaultAsync();
 
         if (destinationAccount == null)
         {
-            return false;
+            throw new Exception("No se encontró la cuenta de destino.");
         }
 
         if (originAccount.Type != destinationAccount.Type ||

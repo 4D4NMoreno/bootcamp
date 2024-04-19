@@ -21,14 +21,14 @@ namespace Infrastructure.Mappings
             // Mapeo de Transaction a TransactionDTO
             config.NewConfig<Transaction, TransactionDTO>()
                 .Map(dest => dest.Id, src => src.Id)
-                .Map(dest => dest.AccountId, src => src.AccountId)
+                .Map(dest => dest.Account, src => src.Account)
                 .Map(dest => dest.Amount, src => src.Amount)
                 .Map(dest => dest.OriginAccountId, src => src.OriginAccountId)
                 .Map(dest => dest.DestinationAccountId, src => src.DestinationAccountId)
                 .Map(dest => dest.TransactionDateTime, src => src.TransactionDateTime)
                 .Map(dest => dest.DestinationAccountNumber, src => src.DestinationAccountNumber)
                 .Map(dest => dest.DestinationDocumentNumber, src => src.DestinationDocumentNumber)
-                .Map(dest => dest.CurrencyId, src => src.CurrencyId);
+                .Map(dest => dest.Currency, src => src.Currency);
         }
     }
 }
