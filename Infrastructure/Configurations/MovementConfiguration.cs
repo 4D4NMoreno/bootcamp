@@ -13,7 +13,7 @@ namespace Core.EntityConfigurations
 
             entity.Property(e => e.Destination).HasMaxLength(150);
             entity.Property(e => e.Amount).HasPrecision(20, 5);
-            entity.Property(e => e.TransferredDateTime).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.TransferredDateTime).HasColumnType("Date");
             entity.Property(e => e.TransferStatus).HasMaxLength(50);
 
             entity.HasOne(Movement => Movement.Account)

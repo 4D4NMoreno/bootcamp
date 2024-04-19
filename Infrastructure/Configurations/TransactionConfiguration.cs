@@ -19,9 +19,9 @@ namespace Infrastructure.Configurations
             builder.Property(t => t.DestinationDocumentNumber).HasMaxLength(50);
             builder.Property(e => e.OriginAccountId)
                    .HasColumnName("OriginAccountId")
-                   .IsRequired(); // Suponiendo que este campo es obligatorio
+                   .IsRequired(); 
 
-            // Mapeo de la propiedad DestinationAccountId
+
             builder.Property(e => e.DestinationAccountId)
                    .HasColumnName("DestinationAccountId")
                    .IsRequired();
@@ -31,11 +31,6 @@ namespace Infrastructure.Configurations
                 .WithMany(c => c.Transactions)
                 .HasForeignKey(t => t.CurrencyId);
 
-            //builder
-            //    .HasOne(t => t.Account)
-            //    .WithMany(a => a.Transactions)
-            //    .HasForeignKey(t => t.AccountId)
-            //    .OnDelete(DeleteBehavior.Restrict); 
         }
     }
 }

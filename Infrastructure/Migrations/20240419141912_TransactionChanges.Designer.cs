@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(BootcampContext))]
-    partial class BootcampContextModelSnapshot : ModelSnapshot
+    [Migration("20240419141912_TransactionChanges")]
+    partial class TransactionChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -310,18 +313,16 @@ namespace Infrastructure.Migrations
                         .HasColumnType("numeric(20,5)");
 
                     b.Property<string>("Destination")
+                        .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
-
-                    b.Property<int>("MovementType")
-                        .HasColumnType("integer");
 
                     b.Property<int>("TransferStatus")
                         .HasMaxLength(50)
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("TransferredDateTime")
-                        .HasColumnType("Date");
+                        .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id")
                         .HasName("Movement_pkey");
@@ -352,6 +353,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("ProductName")
@@ -446,24 +448,24 @@ namespace Infrastructure.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("CurrencyId")
+                    b.Property<int>("CurrencyId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("DestinationAccountId")
-                        .IsRequired()
+                    b.Property<int>("DestinationAccountId")
                         .HasColumnType("integer")
                         .HasColumnName("DestinationAccountId");
 
                     b.Property<string>("DestinationAccountNumber")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
                     b.Property<string>("DestinationDocumentNumber")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<int?>("OriginAccountId")
-                        .IsRequired()
+                    b.Property<int>("OriginAccountId")
                         .HasColumnType("integer")
                         .HasColumnName("OriginAccountId");
 
@@ -601,7 +603,9 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Core.Entities.Currency", "Currency")
                         .WithMany("Transactions")
-                        .HasForeignKey("CurrencyId");
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Currency");
                 });

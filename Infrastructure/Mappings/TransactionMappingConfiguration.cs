@@ -9,19 +9,26 @@ namespace Infrastructure.Mappings
     {
         public void Register(TypeAdapterConfig config)
         {
-            // Mapeo de TransferRequest a Transaction
             config.NewConfig<TransferRequest, Transaction>()
                 .Map(dest => dest.Amount, src => src.Amount)
                 .Map(dest => dest.DestinationAccountId, src => src.DestinationAccountId)
                 .Map(dest => dest.OriginAccountId, src => src.OriginAccountId)
-                .Map(dest => dest.DestinationAccountNumber, src => src.DestinationAccountNumber)
-                .Map(dest => dest.DestinationDocumentNumber, src => src.DestinationDocumentNumber)
-                .Map(dest => dest.CurrencyId, src => src.CurrencyId);
+                .Map(dest => dest.TransactionDateTime, src => src.TransactionDateTime)
+                //.Map(dest => dest.DestinationAccountNumber, src => src.DestinationAccountNumber).Optional()
+                //.Map(dest => dest.DestinationDocumentNumber, src => src.DestinationDocumentNumber).Optional()
+                .Map(dest => dest.CurrencyId, src => src.CurrencyId)
+                .Map(dest => dest.DestinationAccountNumber, src =>
+                src.DestinationAccountNumber != null
+                ? src.DestinationAccountNumber
+                : null)
+                .Map(dest => dest.DestinationDocumentNumber, src =>
+                src.DestinationDocumentNumber != null
+                ? src.DestinationDocumentNumber
+                : null);
 
-            // Mapeo de Transaction a TransactionDTO
+
             config.NewConfig<Transaction, TransactionDTO>()
                 .Map(dest => dest.Id, src => src.Id)
-                //.Map(dest => dest.Account, src => src.Account)
                 .Map(dest => dest.Amount, src => src.Amount)
                 .Map(dest => dest.OriginAccountId, src => src.OriginAccountId)
                 .Map(dest => dest.DestinationAccountId, src => src.DestinationAccountId)
