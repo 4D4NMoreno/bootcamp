@@ -4,5 +4,5 @@ namespace Core.Interfaces.Services;
 
 public interface ITransactionService
 {
-    Task<bool> MakeTransfer(int originAccountId, TransferRequest transferRequest);
+    Task<bool> MakeTransfer(TransferRequest transferRequest);
 }

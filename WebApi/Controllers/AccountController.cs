@@ -14,11 +14,11 @@ namespace WebApi.Controllers
         {
             _accountService = accountService;
         }
-        //[HttpPost("Crear")]
-        //public async Task<IActionResult> Create([FromBody] CreateAccountRequest request)
-        //{
-        //    return Ok(await _accountService.Add(request));
-        //}
+        [HttpPost("Crear")]
+        public async Task<IActionResult> Create([FromBody] CreateAccountRequest request)
+        {
+            return Ok(await _accountService.Add(request));
+        }
         //[HttpGet("Filtrar")]
         //public async Task<IActionResult> GetFiltered([FromQuery] FilterAccountModel filter)
         //{

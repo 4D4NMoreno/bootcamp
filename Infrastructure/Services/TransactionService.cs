@@ -12,8 +12,8 @@ public class TransactionService : ITransactionService
     {
         _repository = repository;
     }
-    public Task<bool> MakeTransfer(int originAccountId, TransferRequest transferRequest)
+    public async Task<bool> MakeTransfer(TransferRequest transferRequest)
     {
-        throw new NotImplementedException();
+        return await _repository.MakeTransfer(transferRequest);
     }
 }

@@ -17,11 +17,11 @@ namespace WebApi.Controllers
             _service = service;
         }
 
-        //[HttpPost("Crear")]
-        //public async Task<IActionResult> Create([FromBody] CreateCurrencyModel request)
-        //{
-        //    return Ok(await _service.Add(request));
-        //}
+        [HttpPost("Crear")]
+        public async Task<IActionResult> Create([FromBody] CreateCurrencyModel request)
+        {
+            return Ok(await _service.Add(request));
+        }
         //[HttpGet("filtrar")]
         //public async Task<IActionResult> GetFiltered([FromQuery] FilterCurrencyModel filter)
         //{

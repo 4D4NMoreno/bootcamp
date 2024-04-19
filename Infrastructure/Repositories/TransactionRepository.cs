@@ -15,9 +15,9 @@ public class TransactionRepository : ITransactionRepository
     {
         _context = context;
     }
-    public async Task<bool> MakeTransfer(int originAccountId, TransferRequest transferRequest)
+    public async Task<bool> MakeTransfer(TransferRequest transferRequest)
     {
-        var originAccount = await _context.Accounts.FindAsync(originAccountId);
+        var originAccount = await _context.Accounts.FindAsync(transferRequest.OriginAccountId);
         if (originAccount == null || originAccount.Status == AccountStatus.Inactive)
         {
             return false;
@@ -48,7 +48,7 @@ public class TransactionRepository : ITransactionRepository
         }
         var transfer = new Transaction
         {
-            OriginAccountId = originAccountId,
+            OriginAccountId = transferRequest.OriginAccountId,
             DestinationAccountId = destinationAccount.Id,
             Amount = transferRequest.Amount,
             TransactionDateTime = DateTime.Now
@@ -59,7 +59,8 @@ public class TransactionRepository : ITransactionRepository
 
         var originMovement = new Movement
         {
-            AccountId = originAccountId,
+            AccountId = transferRequest.OriginAccountId,
+            Destination = transferRequest.DestinationAccountNumber,
             Amount = -transferRequest.Amount,
             TransferredDateTime = DateTime.Now,
             TransferStatus = TransferStatus.Done

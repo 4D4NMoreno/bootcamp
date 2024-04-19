@@ -49,6 +49,7 @@ public static class DependencyInjection
         services.AddScoped<IEnterpriseRepository, EnterpriseRepository>();
         services.AddScoped<IPromotionRepository, PromotionRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<ITransactionRepository, TransactionRepository>();
 
         return services;
     }
@@ -64,6 +65,7 @@ public static class DependencyInjection
         services.AddScoped<IEnterpriseService, EnterpriseService>();
         services.AddScoped<IPromotionService, PromotionService>();
         services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<ITransactionService, TransactionService>();
         return services;
     }
     public static IServiceCollection AddMapping(this IServiceCollection services)

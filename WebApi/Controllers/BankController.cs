@@ -15,35 +15,35 @@ public class BankController : BaseApiController
         _service = service;
     }
 
-    //[HttpPost]
-    //public async Task<IActionResult> Create([FromBody] CreateBankModel request)
-    //{
-    //    return Ok(await _service.Add(request));
-    //}
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateBankModel request)
+    {
+        return Ok(await _service.Add(request));
+    }
 
-    //[HttpGet("{id}")]
-    //public async Task<IActionResult> GetById([FromRoute] int id)
-    //{
-    //    var bank = await _service.GetById(id);
-    //    return Ok(bank);
-    //}
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById([FromRoute] int id)
+    {
+        var bank = await _service.GetById(id);
+        return Ok(bank);
+    }
 
-    //[HttpPut]
-    //public async Task<IActionResult> Update([FromBody] UpdateBankModel request)
-    //{
-    //    return Ok(await _service.Update(request));
-    //}
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody] UpdateBankModel request)
+    {
+        return Ok(await _service.Update(request));
+    }
 
-    //[HttpDelete("{id}")]
-    //public async Task<IActionResult> Delete([FromRoute] int id)
-    //{
-    //    return Ok(await _service.Delete(id));
-    //}
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete([FromRoute] int id)
+    {
+        return Ok(await _service.Delete(id));
+    }
 
-    //[HttpGet("GetAll")]
-    //public async Task<IActionResult> GetAll()
-    //{
-    //    var bank = await _service.GetAll();
-    //    return Ok(bank);
-    //}
+    [HttpGet("GetAll")]
+    public async Task<IActionResult> GetAll()
+    {
+        var bank = await _service.GetAll();
+        return Ok(bank);
+    }
 }
