@@ -16,7 +16,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("Crear")]
-        public async Task<IActionResult> Create([FromBody] BankProductRequest request)
+        public async Task<IActionResult> Create([FromBody] CreateProductRequest request)
         {
             return Ok(await _service.Add(request));
         }

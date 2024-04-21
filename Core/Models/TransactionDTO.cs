@@ -15,6 +15,4 @@ public class TransactionDTO
     public int CurrencyId { get; set; }
 
     public int AccountId { get; set; }
-    public CurrencyDTO? Currency { get; set; }
-    public AccountDTO? Account { get; set; }
 }

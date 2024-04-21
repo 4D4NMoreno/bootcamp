@@ -1,4 +1,5 @@
 ﻿using Core.Interfaces.Repositories;
+using Core.Interfaces.Services;
 using Core.Request;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,26 +7,33 @@ namespace WebApi.Controllers
 {
     public class TransactionController : BaseApiController
     {
-        private readonly ITransactionRepository _transactionRepository;
+        private readonly ITransactionService _service;
 
-        public TransactionController(ITransactionRepository transactionRepository)
+        public TransactionController(ITransactionService service)
         {
-            _transactionRepository = transactionRepository;
+            _service = service;
         }
 
         [HttpPost("make-transfer")]
         public async Task<IActionResult> MakeTransfer([FromBody] TransferRequest transferRequest)
         {
-            var success = await _transactionRepository.MakeTransfer(transferRequest);
-
-            if (success)
-            {
-                return Ok("Transferencia realizada con éxito.");
-            }
-            else
-            {
-                return BadRequest("No se pudo realizar la transferencia. Por favor, verifique los detalles y vuelva a intentarlo.");
-            }
+            return Ok(await _service.MakeTransfer(transferRequest));
         }
+
+        //[HttpPost("make-payment")]
+        //public async Task<IActionResult> MakePayment(PaymentRequest paymentRequest)
+        //{
+            //var result = await -_service.MakePayment(paymentRequest);
+
+            //if (result)
+            //{
+            //    return Ok("Payment successful.");
+            //}
+            //else
+            //{
+            //    return BadRequest("Payment failed.");
+            //}
+
+        //}
     }
 }

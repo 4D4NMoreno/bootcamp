@@ -11,12 +11,10 @@ namespace Infrastructure.Mappings
         {
             config.NewConfig<TransferRequest, Transaction>()
                 .Map(dest => dest.Amount, src => src.Amount)
+                .Map(dest => dest.TransactionDateTime, src => src.TransactionDateTime)
                 .Map(dest => dest.DestinationAccountId, src => src.DestinationAccountId)
                 .Map(dest => dest.OriginAccountId, src => src.OriginAccountId)
-                .Map(dest => dest.TransactionDateTime, src => src.TransactionDateTime)
-                //.Map(dest => dest.DestinationAccountNumber, src => src.DestinationAccountNumber).Optional()
-                //.Map(dest => dest.DestinationDocumentNumber, src => src.DestinationDocumentNumber).Optional()
-                .Map(dest => dest.CurrencyId, src => src.CurrencyId)
+                
                 .Map(dest => dest.DestinationAccountNumber, src =>
                 src.DestinationAccountNumber != null
                 ? src.DestinationAccountNumber
@@ -27,15 +25,6 @@ namespace Infrastructure.Mappings
                 : null);
 
 
-            config.NewConfig<Transaction, TransactionDTO>()
-                .Map(dest => dest.Id, src => src.Id)
-                .Map(dest => dest.Amount, src => src.Amount)
-                .Map(dest => dest.OriginAccountId, src => src.OriginAccountId)
-                .Map(dest => dest.DestinationAccountId, src => src.DestinationAccountId)
-                .Map(dest => dest.TransactionDateTime, src => src.TransactionDateTime)
-                .Map(dest => dest.DestinationAccountNumber, src => src.DestinationAccountNumber)
-                .Map(dest => dest.DestinationDocumentNumber, src => src.DestinationDocumentNumber)
-                .Map(dest => dest.Currency, src => src.Currency);
         }
     }
 }

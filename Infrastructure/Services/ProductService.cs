@@ -14,7 +14,7 @@ public class ProductService : IProductService
     {
         _repository = repository;
     }
-    public async Task<ProductRequestDTO> Add(BankProductRequest request)
+    public async Task<ProductRequestDTO> Add(CreateProductRequest request)
     {
 
         return await _repository.Add(request);

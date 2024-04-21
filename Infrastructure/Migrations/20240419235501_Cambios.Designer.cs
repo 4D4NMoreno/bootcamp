@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(BootcampContext))]
-    partial class BootcampContextModelSnapshot : ModelSnapshot
+    [Migration("20240419235501_Cambios")]
+    partial class Cambios
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,7 +68,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Accounts", (string)null);
+                    b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("Core.Entities.Bank", b =>
@@ -208,7 +211,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("AccountId")
                         .IsUnique();
 
-                    b.ToTable("CurrentAccounts", (string)null);
+                    b.ToTable("CurrentAccounts");
                 });
 
             modelBuilder.Entity("Core.Entities.Customer", b =>
@@ -291,7 +294,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Enterprises", (string)null);
+                    b.ToTable("Enterprises");
                 });
 
             modelBuilder.Entity("Core.Entities.Movement", b =>
@@ -328,7 +331,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("Movements", (string)null);
+                    b.ToTable("Movements");
                 });
 
             modelBuilder.Entity("Core.Entities.ProductRequest", b =>
@@ -363,7 +366,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("ProductRequests", (string)null);
+                    b.ToTable("ProductRequests");
                 });
 
             modelBuilder.Entity("Core.Entities.Promotion", b =>
@@ -389,7 +392,7 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Promotions", (string)null);
+                    b.ToTable("Promotions");
                 });
 
             modelBuilder.Entity("Core.Entities.PromotionEnterprise", b =>
@@ -404,7 +407,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("EnterpriseId");
 
-                    b.ToTable("PromotionEnterprises", (string)null);
+                    b.ToTable("PromotionEnterprises");
                 });
 
             modelBuilder.Entity("Core.Entities.SavingAccount", b =>
@@ -432,7 +435,7 @@ namespace Infrastructure.Migrations
                     b.HasIndex("AccountId")
                         .IsUnique();
 
-                    b.ToTable("SavingAccounts", (string)null);
+                    b.ToTable("SavingAccounts");
                 });
 
             modelBuilder.Entity("Core.Entities.Transaction", b =>
@@ -445,6 +448,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("CurrencyId")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("DestinationAccountId")
                         .IsRequired()
@@ -468,7 +474,9 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Transactions", (string)null);
+                    b.HasIndex("CurrencyId");
+
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("Core.Entities.Account", b =>
@@ -591,6 +599,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("Account");
                 });
 
+            modelBuilder.Entity("Core.Entities.Transaction", b =>
+                {
+                    b.HasOne("Core.Entities.Currency", "Currency")
+                        .WithMany("Transactions")
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Currency");
+                });
+
             modelBuilder.Entity("Core.Entities.Account", b =>
                 {
                     b.Navigation("CurrentAccount");
@@ -612,6 +631,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("CreditCards");
 
                     b.Navigation("Products");
+
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("Core.Entities.Customer", b =>

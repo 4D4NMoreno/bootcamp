@@ -1,12 +1,10 @@
-﻿using Core.Constants;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Interfaces.Repositories;
 using Core.Models;
 using Core.Request;
 using Infrastructure.Contexts;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Principal;
 
 namespace Infrastructure.Repositories;
 
@@ -18,7 +16,7 @@ public class ProductRepository : IProductRepository
     {
         _context = context;
     }
-    public async Task<ProductRequestDTO> Add(BankProductRequest request)
+    public async Task<ProductRequestDTO> Add(CreateProductRequest request)
     {
         
         var product = request.Adapt<ProductRequest>();
@@ -28,9 +26,8 @@ public class ProductRepository : IProductRepository
         await _context.SaveChangesAsync();
 
         var createdProduct = await _context.ProductRequests
-        .Include(pr => pr.Currency) 
-        .Include(pr => pr.Customer) 
-            .ThenInclude(c => c.Bank) 
+            .Include(pr => pr.Currency)
+            .Include(pr => pr.Customer)
         .FirstOrDefaultAsync(pr => pr.Id == product.Id);
 
 

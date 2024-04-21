@@ -11,6 +11,4 @@ public class Currency
 
     public ICollection<CreditCard> CreditCards { get; set; } = new List<CreditCard>();
 
-    public ICollection<Transaction> Transactions { get; set; } = new List<Transaction>();
-
 }

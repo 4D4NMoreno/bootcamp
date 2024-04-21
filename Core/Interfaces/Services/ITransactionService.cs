@@ -1,8 +1,11 @@
-﻿using Core.Request;
+﻿using Core.Models;
+using Core.Request;
 
 namespace Core.Interfaces.Services;
 
 public interface ITransactionService
 {
-    Task<bool> MakeTransfer(TransferRequest transferRequest);
+    Task<TransferDTO> MakeTransfer(TransferRequest transferRequest);
+
+    
 }

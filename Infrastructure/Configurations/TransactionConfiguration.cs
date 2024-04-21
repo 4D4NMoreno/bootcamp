@@ -26,10 +26,6 @@ namespace Infrastructure.Configurations
                    .HasColumnName("DestinationAccountId")
                    .IsRequired();
 
-            builder
-                .HasOne(t => t.Currency)
-                .WithMany(c => c.Transactions)
-                .HasForeignKey(t => t.CurrencyId);
 
         }
     }

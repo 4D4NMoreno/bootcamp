@@ -13,7 +13,7 @@ public class ProductRequest
 
 
     public int CurrencyId { get; set; }
-    public Currency? Currency { get; set; }
+    public Currency Currency { get; set; }
 
     public DateTime ApplicationDate { get; set; }
     public DateTime ApprovalDate { get; set; }

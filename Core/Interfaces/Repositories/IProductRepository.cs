@@ -5,5 +5,5 @@ namespace Core.Interfaces.Repositories;
 
 public interface IProductRepository
 {
-    Task<ProductRequestDTO> Add(BankProductRequest request);
+    Task<ProductRequestDTO> Add(CreateProductRequest request);
 }
