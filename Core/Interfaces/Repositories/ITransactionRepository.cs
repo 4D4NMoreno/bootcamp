@@ -10,5 +10,15 @@ public interface ITransactionRepository
 
     Task<(bool isValid, string message)> ValidateTransferRequest(TransferRequest transferRequest);
 
-    Task<bool> MakePayment(PaymentRequest paymentRequest);
+    Task<PaymentDTO> MakePayment(PaymentRequest paymentRequest);
+
+    Task<(bool isValid, string message)> ValidatePaymentRequest(PaymentRequest paymentRequest);
+
+    Task<DepositDTO> MakeDeposit(DepositRequest depositRequest);
+
+    Task<(bool isValid, string message)> ValidateDepositRequest(DepositRequest depositRequest);
+
+    Task<WithdrawalDTO> MakeWithdrawal(WithdrawalRequest withdrawalRequest);
+
+    Task<(bool isValid, string message)> ValidateWithdrawalRequest(WithdrawalRequest withdrawalRequest);
 }

@@ -24,6 +24,24 @@ namespace Infrastructure.Mappings
                 ? src.DestinationDocumentNumber
                 : null);
 
+            config.NewConfig<PaymentRequest, Transaction>()
+                .Map(dest => dest.Amount, src => src.Amount)
+                .Map(dest => dest.TransactionDateTime, src => src.TransactionDateTime)
+                .Map(dest => dest.OriginAccountId, src => src.OriginAccountId)
+                .Map(dest => dest.DocumentNumber, src => src.DocumentNumber);
+
+
+            config.NewConfig<DepositRequest, Transaction>()
+                .Map(dest => dest.Amount, src => src.Amount)
+                .Map(dest => dest.Bank, src => src.BankId)
+                .Map(dest => dest.TransactionDateTime, src => src.TransactionDateTime)
+                .Map(dest => dest.DestinationAccountId, src => src.DestinationAccountId);
+
+            config.NewConfig<WithdrawalRequest, Transaction>()
+                .Map(dest => dest.Amount, src => src.Amount)
+                .Map(dest => dest.Bank, src => src.BankId)
+                .Map(dest => dest.TransactionDateTime, src => src.TransactionDateTime)
+                .Map(dest => dest.OriginAccountId, src => src.OriginAccountId);
 
         }
     }

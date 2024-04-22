@@ -20,20 +20,23 @@ namespace WebApi.Controllers
             return Ok(await _service.MakeTransfer(transferRequest));
         }
 
-        //[HttpPost("make-payment")]
-        //public async Task<IActionResult> MakePayment(PaymentRequest paymentRequest)
-        //{
-            //var result = await -_service.MakePayment(paymentRequest);
+        [HttpPost("make-payment")]
+        public async Task<IActionResult> MakePayment(PaymentRequest paymentRequest)
+        {
+            return Ok(await _service.MakePayment(paymentRequest));
 
-            //if (result)
-            //{
-            //    return Ok("Payment successful.");
-            //}
-            //else
-            //{
-            //    return BadRequest("Payment failed.");
-            //}
+        }
+        [HttpPost("make-deposit")]
+        public async Task<IActionResult> MakeDeposit(DepositRequest depositRequest)
+        {
+            return Ok(await _service.MakeDeposit(depositRequest));
 
-        //}
+        }
+        [HttpPost("make-withdrawal")]
+        public async Task<IActionResult> MakeWithdrawal(WithdrawalRequest withdrawalRequest)
+        {
+            return Ok(await _service.MakeWithdrawal(withdrawalRequest));
+
+        }
     }
 }

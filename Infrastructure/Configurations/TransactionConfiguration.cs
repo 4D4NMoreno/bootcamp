@@ -18,13 +18,18 @@ namespace Infrastructure.Configurations
 
             builder.Property(t => t.DestinationDocumentNumber).HasMaxLength(50);
             builder.Property(e => e.OriginAccountId)
-                   .HasColumnName("OriginAccountId")
-                   .IsRequired(); 
+                   .HasColumnName("OriginAccountId");
 
 
-            builder.Property(e => e.DestinationAccountId)
-                   .HasColumnName("DestinationAccountId")
-                   .IsRequired();
+            builder.Property(e => e.Bank)
+                   .HasColumnName("Bank");
+
+            builder.Property(e => e.TransactionType)
+                   .HasColumnName("TransactionType");
+
+            builder.Property(e => e.TransactionType)
+                   .HasColumnName("TransactionType");
+
 
 
         }
