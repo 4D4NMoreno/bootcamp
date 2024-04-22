@@ -1,6 +1,8 @@
 ﻿using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
+using Core.Models;
 using Core.Request;
+using Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -37,6 +39,13 @@ namespace WebApi.Controllers
         {
             return Ok(await _service.MakeWithdrawal(withdrawalRequest));
 
+        }
+        [HttpGet("filtered")]
+        public async Task<ActionResult<List<TransactionDTO>>> GetFilteredTransactions([FromQuery] FilterTransactionModel filter)
+        { 
+
+            var transactions = await _service.GetFilteredTransactions(filter);
+            return Ok(transactions);
         }
     }
 }

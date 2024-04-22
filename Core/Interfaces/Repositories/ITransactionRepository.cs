@@ -21,4 +21,6 @@ public interface ITransactionRepository
     Task<WithdrawalDTO> MakeWithdrawal(WithdrawalRequest withdrawalRequest);
 
     Task<(bool isValid, string message)> ValidateWithdrawalRequest(WithdrawalRequest withdrawalRequest);
+
+    Task<List<TransactionDTO>> GetFilteredTransactions(FilterTransactionModel filter);
 }

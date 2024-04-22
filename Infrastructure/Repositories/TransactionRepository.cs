@@ -7,7 +7,6 @@ using Core.Request;
 using Infrastructure.Contexts;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography.Xml;
 
 namespace Infrastructure.Repositories;
 
@@ -33,14 +32,11 @@ public class TransactionRepository : ITransactionRepository
 
         var transfer = transferRequest.Adapt<Transaction>();
 
-        originAccount.Balance -= transferRequest.Amount;
-        destinationAccount.Balance += transferRequest.Amount;
+        transfer.Bank = destinationAccount.Customer.Bank.Name;
 
-        if (originAccount.CurrentAccount != null)
-        {
-            originAccount.CurrentAccount.OperationalLimit -= transferRequest.Amount;
-            destinationAccount.CurrentAccount.OperationalLimit -= transferRequest.Amount;
-        }
+        originAccount.Balance -= transferRequest.Amount;
+
+        destinationAccount.Balance += transferRequest.Amount;
 
         var localDateTime = TimeZoneInfo.ConvertTimeFromUtc(transfer.TransactionDateTime, TimeZoneInfo.Local);
 
@@ -64,7 +60,9 @@ public class TransactionRepository : ITransactionRepository
         };
 
         _context.Transactions.Add(transfer);
+
         _context.Movements.AddRange(originMovement, destinationMovement);
+
         await _context.SaveChangesAsync();
 
         var transferDTO = new TransferDTO
@@ -94,28 +92,21 @@ public class TransactionRepository : ITransactionRepository
             .Include(a => a.Customer)
             .ThenInclude(c => c.Bank)
             .FirstOrDefaultAsync(a => a.Id == transferRequest.DestinationAccountId);
-       
-        if (originAccount == null || destinationAccount == null )
+
+        if (destinationAccount == null)
         {
-            return (false, $"The source or destination account does not exist");
+            return (false, "The source or destination account does not exist");
         }
 
-        if (originAccount.Status == AccountStatus.Inactive)
+        if (originAccount.Status == AccountStatus.Inactive || destinationAccount.Status == AccountStatus.Inactive)
         {
-            return (false, $"The vaccount with id: {transferRequest.OriginAccountId} is inactive.");
-        }
-
-        if (destinationAccount.Status == AccountStatus.Inactive)
-        {
-            return (false, $"The account with id: {transferRequest.DestinationAccountId} is inactive.");
+            return (false, "Inactive account");
         }
 
         if (originAccount.Balance < transferRequest.Amount)
         {
             return (false, "Insufficient balance in the origin account.");
         }
-
-        
 
         if (originAccount.Type != destinationAccount.Type
            || originAccount.CurrencyId != destinationAccount.CurrencyId)
@@ -125,18 +116,26 @@ public class TransactionRepository : ITransactionRepository
 
         if (originAccount.CurrentAccount != null)
         {
-            if (transferRequest.Amount > originAccount.CurrentAccount.OperationalLimit
-                || transferRequest.Amount > destinationAccount.CurrentAccount.OperationalLimit)
-            {
-                return (false, "operational limit reached");
-            }
-        }
+            var originTransactionsSum = _context.Movements
+                .Where(t => t.AccountId == transferRequest.OriginAccountId)
+                .Sum(t => t.Amount);
 
+            var destinationTransactionsSum = _context.Movements
+                .Where(t => t.AccountId == transferRequest.DestinationAccountId)
+                .Sum(t => t.Amount);
+
+            if (originTransactionsSum + transferRequest.Amount > originAccount.CurrentAccount.OperationalLimit
+           || destinationTransactionsSum + transferRequest.Amount > destinationAccount.CurrentAccount.OperationalLimit)
+           {
+             return (false, "Operational limit reached");
+           }
+        }
+            
         if (originAccount.Customer?.BankId == transferRequest.DestinationBank)
         {
             destinationAccount = await _context.Accounts
                 .FirstOrDefaultAsync(a => a.Id == transferRequest.DestinationAccountId &&
-                a.Customer.BankId == transferRequest.DestinationBank)
+                                     a.Customer.BankId == transferRequest.DestinationBank)
                 ?? throw new BusinessLogicException("Destination account not found.");
         }
         else
@@ -144,7 +143,8 @@ public class TransactionRepository : ITransactionRepository
             destinationAccount = await _context.Accounts
                 .FirstOrDefaultAsync(a => a.Customer.BankId == transferRequest.DestinationBank &&
                                           a.Number == transferRequest.DestinationAccountNumber &&
-                                          a.Customer.DocumentNumber == transferRequest.DestinationDocumentNumber)
+                                          a.Customer.DocumentNumber == 
+                                          transferRequest.DestinationDocumentNumber)
                 ?? throw new BusinessLogicException("Destination account not found.");
         }
 
@@ -155,16 +155,15 @@ public class TransactionRepository : ITransactionRepository
     {
   
             var originAccount = await _context.Accounts
+                .Include(a => a.Customer)
+                .ThenInclude(c => c.Bank)
                 .FirstOrDefaultAsync(a => a.Id == paymentRequest.OriginAccountId);
-
-            if (originAccount.CurrentAccount != null)
-            {
-            originAccount.CurrentAccount.OperationalLimit -= paymentRequest.Amount;
-            }
 
             originAccount.Balance -= paymentRequest.Amount;
 
             var payment = paymentRequest.Adapt<Transaction>();
+
+            payment.Bank = originAccount.Customer.Bank.Name;
 
             payment.TransactionType = TransactionType.PaymentsForServices;
 
@@ -226,11 +225,16 @@ public class TransactionRepository : ITransactionRepository
         {
             return (false, "Insufficient balance in the origin account.");
         }
+
         if (originAccount.CurrentAccount != null)
         {
-            if (paymentRequest.Amount > originAccount.CurrentAccount.OperationalLimit)
+            var originTransactionsSum = _context.Transactions
+            .Where(t => t.OriginAccountId == paymentRequest.OriginAccountId)
+            .Sum(t => t.Amount);
+
+            if (originTransactionsSum + paymentRequest.Amount > originAccount.CurrentAccount.OperationalLimit)
             {
-                return (false, "operational limit reached");
+                return (false, "Operational limit reached");
             }
         }
 
@@ -244,14 +248,11 @@ public class TransactionRepository : ITransactionRepository
                 .ThenInclude(c => c.Bank)
                 .FirstOrDefaultAsync(a => a.Id == depositRequest.DestinationAccountId);
 
-        if (destinationAccount.CurrentAccount != null)
-        {
-            destinationAccount.CurrentAccount.OperationalLimit -= depositRequest.Amount;
-        }
-
         destinationAccount.Balance += depositRequest.Amount;
 
         var deposit = depositRequest.Adapt<Transaction>();
+
+        deposit.Bank = destinationAccount.Customer.Bank.Name;
 
         deposit.TransactionType = TransactionType.Deposit;
 
@@ -272,7 +273,8 @@ public class TransactionRepository : ITransactionRepository
         var depositDTO = new DepositDTO
         {
             MovementType = movement.MovementType.ToString(),
-            DestinationAccount = $"Holder: {destinationAccount.Holder}, Number: ({destinationAccount.Number})",
+            DestinationAccount = $"Holder: {destinationAccount.Holder}," +
+                                 $" Number: ({destinationAccount.Number})",
             Amount = depositRequest.Amount,
             Bank = destinationAccount.Customer.Bank.Name.ToString(),
             TransactionDateTime = depositRequest.TransactionDateTime,
@@ -298,11 +300,15 @@ public class TransactionRepository : ITransactionRepository
             return (false, "The destination bank does not match that of the destination account");
         }
 
+        var originTransactionsSum = _context.Movements
+            .Where(t => t.AccountId == depositRequest.DestinationAccountId)
+            .Sum(t => t.Amount);
+
         if (destinationAccount.CurrentAccount != null)
         {
-            if (depositRequest.Amount > destinationAccount.CurrentAccount.OperationalLimit)
+            if (originTransactionsSum + depositRequest.Amount > destinationAccount.CurrentAccount.OperationalLimit)
             {
-                return (false, "operational limit reached");
+                return (false, "Operational limit reached");
             }
         }
 
@@ -323,9 +329,9 @@ public class TransactionRepository : ITransactionRepository
 
         originAccount.Balance -= withdrawalRequest.Amount;
 
-        var deposit = withdrawalRequest.Adapt<Transaction>();
+        var withdrawal = withdrawalRequest.Adapt<Transaction>();
 
-        deposit.TransactionType = TransactionType.Withdrawal;
+        withdrawal.TransactionType = TransactionType.Withdrawal;
 
         var movement = new Movement
         {
@@ -337,7 +343,7 @@ public class TransactionRepository : ITransactionRepository
             MovementType = MovementType.Withdrawal
         };
 
-        _context.Transactions.Add(deposit);
+        _context.Transactions.Add(withdrawal);
         _context.Movements.Add(movement);
         await _context.SaveChangesAsync();
 
@@ -380,7 +386,56 @@ public class TransactionRepository : ITransactionRepository
 
         return (true, "All validations are correct.");
     }
-} 
+
+    public async Task<List<TransactionDTO>> GetFilteredTransactions(FilterTransactionModel filter)
+    {
+        var transactionsQuery = _context.Transactions
+            .Where(t => t.OriginAccountId == filter.AccountId || t.DestinationAccountId == filter.AccountId)
+            .AsQueryable();
+
+        if (filter.AccountId == 0)
+        {
+            throw new ArgumentException("AccountId is required");
+        }
+
+        if (filter.Month.HasValue && filter.Year.HasValue)
+        {
+            var startDate = new DateTime(filter.Year.Value, filter.Month.Value, 1, 0, 0, 0, DateTimeKind.Utc);
+
+            var endDate = startDate.AddMonths(1).AddDays(-1);
+
+            transactionsQuery = transactionsQuery.Where(t => t.TransactionDateTime >= startDate &&
+                                                        t.TransactionDateTime <= endDate);
+        }
+        else if (filter.Month.HasValue || filter.Year.HasValue)
+        {
+            throw new ArgumentException("Both month and year should be specified if one is provided.");
+        }
+
+        if (!string.IsNullOrEmpty(filter.Description))
+        {
+            string filterDescriptionLower = filter.Description.ToLower();
+            transactionsQuery = transactionsQuery.Where(x => x.Description.ToLower() == filterDescriptionLower);
+        }
+
+            var transactions = await transactionsQuery.ToListAsync();
+
+        var transactionDTOs = transactions.Select(t =>
+        {
+            var transactionDTO = t.Adapt<TransactionDTO>();
+            transactionDTO.TransactionType = t.TransactionType.ToString();
+            transactionDTO.DestinationBank = t.Bank ??= string.Empty;
+            transactionDTO.DestinationAccountNumber ??= string.Empty;
+            transactionDTO.DestinationDocumentNumber ??= string.Empty;
+            transactionDTO.Description ??= string.Empty;
+            
+            return transactionDTO;
+        }).ToList();
+
+        return transactionDTOs;
+    }
+
+}
 
 
 

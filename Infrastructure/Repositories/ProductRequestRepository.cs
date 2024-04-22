@@ -8,11 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
-public class ProductRepository : IProductRepository
+public class ProductRequestRepository : IProductRepository
 {
     private readonly BootcampContext _context;
 
-    public ProductRepository(BootcampContext context)
+    public ProductRequestRepository(BootcampContext context)
     {
         _context = context;
     }

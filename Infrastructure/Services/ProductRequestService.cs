@@ -6,11 +6,11 @@ using Core.Requests;
 
 namespace Infrastructure.Services;
 
-public class ProductService : IProductService
+public class ProductRequestService : IProductService
 {
     private readonly IProductRepository _repository;
 
-    public ProductService(IProductRepository repository)
+    public ProductRequestService(IProductRepository repository)
     {
         _repository = repository;
     }

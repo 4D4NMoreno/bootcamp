@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
 {
-    public class ProductController : BaseApiController
+    public class ProductRequestController : BaseApiController
     {
         private readonly IProductService _service;
 
-        public ProductController(IProductService service)
+        public ProductRequestController(IProductService service)
         {
             _service = service;
         }

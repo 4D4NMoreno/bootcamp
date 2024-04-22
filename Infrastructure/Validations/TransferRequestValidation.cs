@@ -30,7 +30,11 @@ namespace Infrastructure.Validations
             .ThenInclude(c => c.Bank)
             .FirstOrDefault(a => a.Id == request.OriginAccountId);
 
-
+           if (originAccount == null)
+           {
+               context.AddFailure("Origin account or Bank Not Found .");
+               return;
+           }
 
            if (request.DestinationBank.HasValue &&
                         originAccount.Customer.BankId != request.DestinationBank)
