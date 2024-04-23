@@ -14,6 +14,10 @@ namespace Infrastructure.Validations
     {
        _context = context;
 
+       RuleFor(x => x.DestinationAccountId)
+             .NotNull().WithMessage("Destination account ID cannot be null")
+             .NotEmpty().WithMessage("Destination account ID cannot be empty");
+
        RuleFor(x => x.OriginAccountId)
              .NotNull().WithMessage("Origin account ID cannot be null")
              .NotEmpty().WithMessage("Origin account ID cannot be empty");

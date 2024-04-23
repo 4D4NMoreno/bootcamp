@@ -9,11 +9,11 @@ public class DepositRequestValidation : AbstractValidator<DepositRequest>
     public DepositRequestValidation()
     {
         RuleFor(x => x.DestinationAccountId)
-              .NotNull().WithMessage("Origin account ID cannot be null")
-              .NotEmpty().WithMessage("Origin account ID cannot be empty");
+              .NotNull().WithMessage("Destination account ID cannot be null")
+              .NotEmpty().WithMessage("Destination account ID cannot be empty");
         RuleFor(x => x.BankId)
-            .NotNull().WithMessage("Origin account ID cannot be null")
-            .NotEmpty().WithMessage("Origin account ID cannot be empty");
+            .NotNull().WithMessage("Bank ID cannot be null")
+            .NotEmpty().WithMessage("Bank ID cannot be empty");
 
 
         RuleFor(x => x.Amount)

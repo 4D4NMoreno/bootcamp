@@ -12,7 +12,7 @@ namespace Core.Entities
         public string? Bank { get; set; }
         public string? DocumentNumber { get; set; }
         public int OriginAccountId { get; set; } 
-        public int? DestinationAccountId { get; set; }
+        public int DestinationAccountId { get; set; }
         public DateTime TransactionDateTime { get; set; }
         public string? DestinationAccountNumber { get; set; }
         public string? DestinationDocumentNumber { get; set; }

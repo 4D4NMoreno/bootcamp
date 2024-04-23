@@ -27,7 +27,7 @@ public class TransactionService : ITransactionService
             throw new BusinessLogicException(validationResult.message);
         }
         return await _repository.MakeTransfer(transferRequest);
-       
+
     }
     public async Task<PaymentDTO> MakePayment(PaymentRequest paymentRequest)
     {
