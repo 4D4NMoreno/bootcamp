@@ -34,6 +34,14 @@ public class MovementMappingConfiguration : IRegister
         .Map(dest => dest.TransferStatus, src => TransferStatus.Done)
         .Map(dest => dest.MovementType, src => MovementType.Deposit);
 
+        config.NewConfig<WithdrawalRequest, Movement>()
+        .Map(dest => dest.AccountId, src => src.OriginAccountId)
+        .Map(dest => dest.Amount, src => src.Amount)
+        .Map(dest => dest.TransferredDateTime, src => TimeZoneInfo
+        .ConvertTimeFromUtc(src.TransactionDateTime, TimeZoneInfo.Local))
+        .Map(dest => dest.TransferStatus, src => TransferStatus.Done)
+        .Map(dest => dest.MovementType, src => MovementType.Withdrawal);
+
     }
 
 }

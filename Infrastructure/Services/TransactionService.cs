@@ -62,8 +62,8 @@ public class TransactionService : ITransactionService
         return await _repository.MakeWithdrawal(withdrawalRequest);
     }
 
-    public Task<List<TransactionDTO>> GetFilteredTransactions(FilterTransactionModel filter)
+    public Task<List<MovementDTO>> GetFilteredMovements(FilterTransactionModel filter)
     {
-        return _repository.GetFilteredTransactions(filter);
+        return _repository.GetFilteredMovements(filter);
     }
 }

@@ -1,9 +1,9 @@
-﻿namespace Core.Models;
+﻿using Core.Constants;
+
+namespace Core.Models;
 
 public class PaymentDTO
 {
-    public string MovementType { get; set; }
-
     public string OriginAccount { get; set; }
 
     public string DocumentNumber { get; set; }

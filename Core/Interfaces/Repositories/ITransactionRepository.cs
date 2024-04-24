@@ -22,5 +22,8 @@ public interface ITransactionRepository
 
     Task<(bool isValid, string message)> ValidateWithdrawalRequest(WithdrawalRequest withdrawalRequest);
 
-    Task<List<TransactionDTO>> GetFilteredTransactions(FilterTransactionModel filter);
+    //Task<List<TransactionDTO>> GetFilteredTransactions(FilterTransactionModel filter);
+
+    Task<List<MovementDTO>> GetFilteredMovements(FilterTransactionModel filter);
+
 }

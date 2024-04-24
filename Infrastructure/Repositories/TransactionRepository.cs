@@ -6,6 +6,7 @@ using Core.Models;
 using Core.Request;
 using Infrastructure.Contexts;
 using Mapster;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
 
@@ -43,9 +44,7 @@ public class TransactionRepository : ITransactionRepository
         var originMovement = transferRequest.Adapt<Movement>();
         originMovement.AccountId = transferRequest.OriginAccountId;
 
-        originMovement.Destination = $"Id: {originAccount.Id}," +
-                               $" Holder: {originAccount.Holder}," +
-                               $" Number: ({originAccount.Number})";
+        originMovement.Destination = Destination(originAccount);
 
         var destinationMovement = transferRequest.Adapt<Movement>();
 
@@ -128,54 +127,40 @@ public class TransactionRepository : ITransactionRepository
     public async Task<PaymentDTO> MakePayment(PaymentRequest paymentRequest)
     {
 
-            var originAccount = await GetAccountByIdAsync(paymentRequest.OriginAccountId);
+        var originAccount = await GetAccountByIdAsync(paymentRequest.OriginAccountId);
 
+        originAccount.Balance -= paymentRequest.Amount;
 
-            originAccount.Balance -= paymentRequest.Amount;
+        var payment = paymentRequest.Adapt<Transaction>();
 
-            var payment = paymentRequest.Adapt<Transaction>();
+        payment.Bank = originAccount.Customer.Bank.Name;
 
-            payment.Bank = originAccount.Customer.Bank.Name;
+        payment.TransactionType = TransactionType.PaymentsForServices;
 
-            payment.TransactionType = TransactionType.PaymentsForServices;
+        var service = await _context.Services
+                     .FirstOrDefaultAsync(a => a.Id == paymentRequest.ServiceId);
 
-            var movement = paymentRequest.Adapt<Movement>();
+        var movement = paymentRequest.Adapt<Movement>();
 
-            movement.Destination = paymentRequest.Description;
-            
-            //var movement = new Movement
-            //{
-            //    AccountId = paymentRequest.OriginAccountId,
-            //    Destination = paymentRequest.Description,
-            //    Amount = paymentRequest.Amount,
-            //    TransferredDateTime = paymentRequest.TransactionDateTime,
-            //    TransferStatus = TransferStatus.Done,
-            //    MovementType = MovementType.PaymentsForServices
-            //};
+        movement.Destination = service.ServiceName;
+        //movement.Destination = paymentRequest.ServiceId.ToString();
 
-            _context.Transactions.Add(payment);
-            _context.Movements.Add(movement);
-            await _context.SaveChangesAsync();
+        var paymentDTO = payment.Adapt<PaymentDTO>();
 
-            //var paymentDTO = new PaymentDTO
-            //{
-            //    MovementType = movement.MovementType.ToString(),
-            //    OriginAccount = $"Holder: {originAccount.Holder}," +
-            //                    $" Number: ({originAccount.Number})",
-            //    Amount = paymentRequest.Amount,
-            //    DocumentNumber = paymentRequest.DocumentNumber,
-            //    Description = paymentRequest.Description,
-            //    TransactionDateTime = paymentRequest.TransactionDateTime,
-            //};
-            var paymentDTO = payment.Adapt<PaymentDTO>();
-            paymentDTO.OriginAccount = $"Id: {originAccount.Id}," +
-                                       $" Holder: {originAccount.Holder}," +
-                                       $" Number: ({originAccount.Number})";
+        paymentDTO.OriginAccount = Destination(originAccount);
 
-            return paymentDTO;
-  
+        paymentDTO.Description = $"Pago de Servicio = {movement.Destination}";
+
+        payment.Description = paymentDTO.Description;
+
+        _context.Transactions.Add(payment);
+        _context.Movements.Add(movement);
+        await _context.SaveChangesAsync();
+
+        return paymentDTO;
+
     }
-    
+
     public async Task<(bool isValid, string message)> ValidatePaymentRequest(PaymentRequest paymentRequest)
     {
         var originAccount = await GetAccountByIdAsync(paymentRequest.OriginAccountId);
@@ -185,9 +170,12 @@ public class TransactionRepository : ITransactionRepository
             return (false, "Invalid Document Number.");
         }
 
-        if (paymentRequest.Description == null)
+        var service = await _context.Services
+                     .FirstOrDefaultAsync(a => a.Id == paymentRequest.ServiceId);
+
+        if (service == null)
         {
-            return (false, "Description is required.");
+            return (false, "Service not found");
         }
 
         if (originAccount.Balance < paymentRequest.Amount)
@@ -233,20 +221,7 @@ public class TransactionRepository : ITransactionRepository
 
         var movement = depositRequest.Adapt<Movement>();
 
-        movement.Destination = $"Id: {destinationAccount.Id}," +
-                               $" Holder: {destinationAccount.Holder}," +
-                               $" Number: ({destinationAccount.Number})";
-
-        //var movement = new Movement
-        //{
-        //    AccountId = depositRequest.DestinationAccountId,
-        //    Destination = $"Holder: {destinationAccount.Holder}," +
-        //                  $" Number: ({destinationAccount.Number})",
-        //    Amount = depositRequest.Amount,
-        //    TransferredDateTime = depositRequest.TransactionDateTime,
-        //    TransferStatus = TransferStatus.Done,
-        //    MovementType = MovementType.Deposit
-        //};
+        movement.Destination = Destination(destinationAccount);
 
         _context.Transactions.Add(deposit);
         _context.Movements.Add(movement);
@@ -257,15 +232,6 @@ public class TransactionRepository : ITransactionRepository
         depositDTO.DestinationAccount = movement.Destination;
         depositDTO.Bank = destinationAccount.Customer.Bank.Name;
         depositDTO.MovementType = movement.MovementType.ToString();
-
-        //var depositDTO = new DepositDTO
-        //{
-        //    MovementType = movement.MovementType.ToString(),
-        //    DestinationAccount = movement.Destination,
-        //    Amount = depositRequest.Amount,
-        //    Bank = destinationAccount.Customer.Bank.Name.ToString(),
-        //    TransactionDateTime = depositRequest.TransactionDateTime,
-        //};
 
         return depositDTO;
     }
@@ -322,17 +288,13 @@ public class TransactionRepository : ITransactionRepository
 
         var movement = withdrawalRequest.Adapt<Movement>();
 
-        movement.Destination = $"Id: {originAccount.Id}," +
-                               $" Holder: {originAccount.Holder}," +
-                               $" Number: ({originAccount.Number})";
-
         _context.Transactions.Add(withdrawal);
         _context.Movements.Add(movement);
         await _context.SaveChangesAsync();
 
         var withdrawalDTO = withdrawal.Adapt<WithdrawalDTO>();
 
-        withdrawalDTO.OriginAccount = movement.Destination;
+        withdrawalDTO.OriginAccount = Destination(originAccount);
         withdrawalDTO.Bank = originAccount.Customer.Bank.Name;
         withdrawalDTO.MovementType = movement.MovementType.ToString();
 
@@ -352,6 +314,10 @@ public class TransactionRepository : ITransactionRepository
         if (originAccount.Customer.BankId != withdrawalRequest.BankId)
         {
             return (false, "The destination bank does not match that of the destination account");
+        }
+        if (originAccount.Balance < withdrawalRequest.Amount)
+        {
+            return (false, "Insufficient balance in the origin account.");
         }
 
         if (originAccount.CurrentAccount != null)
@@ -376,59 +342,59 @@ public class TransactionRepository : ITransactionRepository
         return (true, "All validations are correct.");
     }
 
-    public async Task<List<TransactionDTO>> GetFilteredTransactions(FilterTransactionModel filter)
-    {
+    //public async Task<List<TransactionDTO>> GetFilteredTransactions(FilterTransactionModel filter)
+    //{
 
-        var transactionsQuery = _context.Transactions
-            .Where(t => t.OriginAccountId == filter.AccountId || 
-                   t.DestinationAccountId == filter.AccountId)
-            .AsQueryable();
+    //    var transactionsQuery = _context.Transactions
+    //        .Where(t => t.OriginAccountId == filter.AccountId || 
+    //               t.DestinationAccountId == filter.AccountId)
+    //        .AsQueryable();
 
-        if (filter.AccountId == 0)
-        {
-            throw new ArgumentException("AccountId is required");
-        }
+    //    if (filter.AccountId == 0)
+    //    {
+    //        throw new ArgumentException("AccountId is required");
+    //    }
 
-        if (filter.Month.HasValue && filter.Year.HasValue)
-        {
-            var startDate = new DateTime(filter.Year.Value, filter.Month.Value, 1, 0, 0, 0, DateTimeKind.Utc);
+    //    if (filter.Month.HasValue && filter.Year.HasValue)
+    //    {
+    //        var startDate = new DateTime(filter.Year.Value, filter.Month.Value, 1, 0, 0, 0, DateTimeKind.Utc);
 
-            var endDate = startDate.AddMonths(1).AddDays(-1);
+    //        var endDate = startDate.AddMonths(1).AddDays(-1);
 
-            transactionsQuery = transactionsQuery
-                                    .Where(t => t.TransactionDateTime >= startDate &&
-                                           t.TransactionDateTime <= endDate);
-        }
-        else if (filter.Month.HasValue || filter.Year.HasValue)
-        {
-            throw new ArgumentException("Both month and year should be specified if one is provided.");
-        }
+    //        transactionsQuery = transactionsQuery
+    //                                .Where(t => t.TransactionDateTime >= startDate &&
+    //                                       t.TransactionDateTime <= endDate);
+    //    }
+    //    else if (filter.Month.HasValue || filter.Year.HasValue)
+    //    {
+    //        throw new ArgumentException("Both month and year should be specified if one is provided.");
+    //    }
 
-        if (!string.IsNullOrEmpty(filter.Description))
-        {
-            string filterDescriptionLower = filter.Description.ToLower();
+    //    if (!string.IsNullOrEmpty(filter.Description))
+    //    {
+    //        string filterDescriptionLower = filter.Description.ToLower();
 
-            transactionsQuery = transactionsQuery
-                                    .Where(x => x.Description.ToLower() ==
-                                                filterDescriptionLower);
-        }
+    //        transactionsQuery = transactionsQuery
+    //                                .Where(x => x.Description.ToLower() ==
+    //                                            filterDescriptionLower);
+    //    }
 
-            var transactions = await transactionsQuery.ToListAsync();
+    //        var transactions = await transactionsQuery.ToListAsync();
 
-        var transactionDTOs = transactions.Select(t =>
-        {
-            var transactionDTO = t.Adapt<TransactionDTO>();
-            transactionDTO.TransactionType = t.TransactionType.ToString();
-            transactionDTO.DestinationBank = t.Bank ??= string.Empty;
-            transactionDTO.DestinationAccountNumber ??= string.Empty;
-            transactionDTO.DestinationDocumentNumber ??= string.Empty;
-            transactionDTO.Description ??= string.Empty;
-            
-            return transactionDTO;
-        }).ToList();
+    //    var transactionDTOs = transactions.Select(t =>
+    //    {
+    //        var transactionDTO = t.Adapt<TransactionDTO>();
+    //        transactionDTO.TransactionType = t.TransactionType.ToString();
+    //        transactionDTO.DestinationBank = t.Bank ??= string.Empty;
+    //        transactionDTO.DestinationAccountNumber ??= string.Empty;
+    //        transactionDTO.DestinationDocumentNumber ??= string.Empty;
+    //        transactionDTO.Description ??= string.Empty;
 
-        return transactionDTOs;
-    }
+    //        return transactionDTO;
+    //    }).ToList();
+
+    //    return transactionDTOs;
+    //}
 
     public (decimal originSum, decimal destinationSum) GetTransactionSumsForTransfer(TransferRequest transferRequest)
     {
@@ -456,9 +422,89 @@ public class TransactionRepository : ITransactionRepository
              .Include(a => a.CurrentAccount)
              .Include(a => a.Customer)
              .ThenInclude(c => c.Bank)
-            .FirstOrDefaultAsync(a => a.Id == accountId) ??
-            throw new BusinessLogicException("account not found.");
+             .FirstOrDefaultAsync(a => a.Id == accountId) ??
+             throw new BusinessLogicException("account not found.");
+    }
+    private string Destination(Account account)
+    {
+        var destination = $"Id: {account.Id}, " +
+                          $"Holder: {account.Holder}, " +
+                          $"Number: ({account.Number})";
+
+        return destination;
     }
 
+    public async Task<List<MovementDTO>> GetFilteredMovements(FilterTransactionModel filter)
+    {
+        var movementsQuery = _context.Movements
+            .Where(m => m.AccountId == filter.AccountId)
+            .AsQueryable();
+
+        if (filter.AccountId == 0)
+        {
+            throw new BusinessLogicException("AccountId is required");
+        }
+
+        if (filter.Month.HasValue && filter.Year.HasValue)
+        {
+            var startDate = new DateTime(filter.Year.Value, filter.Month.Value, 1, 0, 0, 0, DateTimeKind.Utc);
+            var endDate = startDate.AddMonths(1).AddDays(-1);
+
+            movementsQuery = movementsQuery
+                .Where(m => m.TransferredDateTime >= startDate && m.TransferredDateTime <= endDate);
+        }
+        else if (filter.Month.HasValue || filter.Year.HasValue)
+        {
+            throw new BusinessLogicException("Both month and year should be specified if one is provided.");
+        }
+
+        if (!string.IsNullOrEmpty(filter.Description))
+        {
+            string filterDescriptionLower = filter.Description.ToLower();
+            string filterDescription = filterDescriptionLower
+                   .First().ToString().ToUpper() + filterDescriptionLower.Substring(1);
+
+            var movements = await movementsQuery.ToListAsync();
+
+            movements = movements
+                .Where(m => Enum.GetName(typeof(MovementType), m.MovementType)
+                .Equals(filterDescription, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            var movementDTOs = movements.Select(m =>
+            {
+                var movementDTO = new MovementDTO
+                {
+                    AccountId = m.AccountId,
+                    Description = Enum.GetName(typeof(MovementType), m.MovementType),
+                    Amount = m.Amount,
+                    TransferredDateTime = m.TransferredDateTime,
+                    TransferStatus = m.TransferStatus.ToString()
+                };
+
+                return movementDTO;
+            }).ToList();
+
+            return movementDTOs;
+        }
+
+        var allMovements = await movementsQuery.ToListAsync();
+
+        var allMovementDTOs = allMovements.Select(m =>
+        {
+            var movementDTO = new MovementDTO
+            {
+                AccountId = m.AccountId,
+                Description = m.MovementType.ToString(),
+                Amount = m.Amount,
+                TransferredDateTime = m.TransferredDateTime,
+                TransferStatus = m.TransferStatus.ToString()
+            };
+
+            return movementDTO;
+        }).ToList();
+
+        return allMovementDTOs;
+    }
 }
 

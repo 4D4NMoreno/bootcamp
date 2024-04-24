@@ -35,11 +35,9 @@ namespace Infrastructure.Mappings
                 .Map(dest => dest.Amount, src => src.Amount)
                 .Map(dest => dest.TransactionDateTime, src => src.TransactionDateTime)
                 .Map(dest => dest.OriginAccountId, src => src.OriginAccountId)
-                .Map(dest => dest.Description, src => src.Description)
                 .Map(dest => dest.DocumentNumber, src => src.DocumentNumber);
 
             config.NewConfig<Transaction, PaymentDTO>()
-                .Map(dest => dest.MovementType, src => src.TransactionType)
                 .Map(dest => dest.Amount, src => src.Amount)
                 .Map(dest => dest.TransactionDateTime, src => src.TransactionDateTime)
                 .Map(dest => dest.Description, src => src.Description)
