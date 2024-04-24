@@ -40,27 +40,16 @@ public class TransactionRepository : ITransactionRepository
 
         destinationAccount.Balance += transferRequest.Amount;
 
-        var localDateTime = TimeZoneInfo.ConvertTimeFromUtc(transfer.TransactionDateTime, TimeZoneInfo.Local);
+        var originMovement = transferRequest.Adapt<Movement>();
+        originMovement.AccountId = transferRequest.OriginAccountId;
 
-        var originMovement = new Movement
-        {
-            AccountId = transferRequest.OriginAccountId,
-            Destination = $"Holder: {destinationAccount.Holder}," +
-                          $" Number: ({destinationAccount.Number})",
-            Amount = transferRequest.Amount,
-            TransferredDateTime = localDateTime,
-            TransferStatus = TransferStatus.Done,
-            MovementType = MovementType.Transfer
-        };
+        originMovement.Destination = $"Id: {originAccount.Id}," +
+                               $" Holder: {originAccount.Holder}," +
+                               $" Number: ({originAccount.Number})";
 
-        var destinationMovement = new Movement
-        {
-            AccountId = destinationAccount.Id,
-            Amount = transferRequest.Amount,
-            TransferredDateTime = localDateTime,
-            TransferStatus = TransferStatus.Done,
-            MovementType = MovementType.Transfer
-        };
+        var destinationMovement = transferRequest.Adapt<Movement>();
+
+        destinationMovement.AccountId = transferRequest.DestinationAccountId;
 
         _context.Transactions.Add(transfer);
 
@@ -68,16 +57,11 @@ public class TransactionRepository : ITransactionRepository
 
         await _context.SaveChangesAsync();
 
-        var transferDTO = new TransferDTO
-        {
-            Id = transfer.Id,
-            AccountId = transferRequest.OriginAccountId,
-            Destination = originMovement.Destination,
-            Amount = originMovement.Amount,
-            TransferredDateTime = localDateTime,
-            TransferStatus = originMovement.TransferStatus.ToString(),
-            MovementType = originMovement.MovementType.ToString()
-        };
+        var transferDTO = transfer.Adapt<TransferDTO>();
+
+        transferDTO.Destination = originMovement.Destination;
+
+        transferDTO.TransferStatus = originMovement.TransferStatus.ToString();
 
         return transferDTO;
     }
@@ -126,6 +110,7 @@ public class TransactionRepository : ITransactionRepository
             var transactionSums = GetTransactionSumsForTransfer(transferRequest);
 
             var originTransactionsSum = transactionSums.originSum;
+
             var destinationTransactionsSum = transactionSums.destinationSum;
 
             if (originTransactionsSum + transferRequest.Amount >
@@ -143,10 +128,10 @@ public class TransactionRepository : ITransactionRepository
     public async Task<PaymentDTO> MakePayment(PaymentRequest paymentRequest)
     {
 
-        var originAccount = await GetAccountByIdAsync(paymentRequest.OriginAccountId);
+            var originAccount = await GetAccountByIdAsync(paymentRequest.OriginAccountId);
 
 
-        originAccount.Balance -= paymentRequest.Amount;
+            originAccount.Balance -= paymentRequest.Amount;
 
             var payment = paymentRequest.Adapt<Transaction>();
 
@@ -154,30 +139,38 @@ public class TransactionRepository : ITransactionRepository
 
             payment.TransactionType = TransactionType.PaymentsForServices;
 
-            var movement = new Movement
-            {
-                AccountId = paymentRequest.OriginAccountId,
-                Destination = paymentRequest.Description,
-                Amount = paymentRequest.Amount,
-                TransferredDateTime = paymentRequest.TransactionDateTime,
-                TransferStatus = TransferStatus.Done,
-                MovementType = MovementType.PaymentsForServices
-            };
+            var movement = paymentRequest.Adapt<Movement>();
+
+            movement.Destination = paymentRequest.Description;
+            
+            //var movement = new Movement
+            //{
+            //    AccountId = paymentRequest.OriginAccountId,
+            //    Destination = paymentRequest.Description,
+            //    Amount = paymentRequest.Amount,
+            //    TransferredDateTime = paymentRequest.TransactionDateTime,
+            //    TransferStatus = TransferStatus.Done,
+            //    MovementType = MovementType.PaymentsForServices
+            //};
 
             _context.Transactions.Add(payment);
             _context.Movements.Add(movement);
             await _context.SaveChangesAsync();
 
-            var paymentDTO = new PaymentDTO
-            {
-                MovementType = movement.MovementType.ToString(),
-                OriginAccount = $"Holder: {originAccount.Holder}," +
-                                $" Number: ({originAccount.Number})",
-                Amount = paymentRequest.Amount,
-                DocumentNumber = paymentRequest.DocumentNumber,
-                Description = paymentRequest.Description,
-                TransactionDateTime = paymentRequest.TransactionDateTime,
-            };
+            //var paymentDTO = new PaymentDTO
+            //{
+            //    MovementType = movement.MovementType.ToString(),
+            //    OriginAccount = $"Holder: {originAccount.Holder}," +
+            //                    $" Number: ({originAccount.Number})",
+            //    Amount = paymentRequest.Amount,
+            //    DocumentNumber = paymentRequest.DocumentNumber,
+            //    Description = paymentRequest.Description,
+            //    TransactionDateTime = paymentRequest.TransactionDateTime,
+            //};
+            var paymentDTO = payment.Adapt<PaymentDTO>();
+            paymentDTO.OriginAccount = $"Id: {originAccount.Id}," +
+                                       $" Holder: {originAccount.Holder}," +
+                                       $" Number: ({originAccount.Number})";
 
             return paymentDTO;
   
@@ -238,29 +231,41 @@ public class TransactionRepository : ITransactionRepository
 
         deposit.TransactionType = TransactionType.Deposit;
 
-        var movement = new Movement
-        {
-            AccountId = depositRequest.DestinationAccountId,
-            Destination = $"Holder: {destinationAccount.Holder}," +
-                          $" Number: ({destinationAccount.Number})",
-            Amount = depositRequest.Amount,
-            TransferredDateTime = depositRequest.TransactionDateTime,
-            TransferStatus = TransferStatus.Done,
-            MovementType = MovementType.Deposit
-        };
+        var movement = depositRequest.Adapt<Movement>();
+
+        movement.Destination = $"Id: {destinationAccount.Id}," +
+                               $" Holder: {destinationAccount.Holder}," +
+                               $" Number: ({destinationAccount.Number})";
+
+        //var movement = new Movement
+        //{
+        //    AccountId = depositRequest.DestinationAccountId,
+        //    Destination = $"Holder: {destinationAccount.Holder}," +
+        //                  $" Number: ({destinationAccount.Number})",
+        //    Amount = depositRequest.Amount,
+        //    TransferredDateTime = depositRequest.TransactionDateTime,
+        //    TransferStatus = TransferStatus.Done,
+        //    MovementType = MovementType.Deposit
+        //};
 
         _context.Transactions.Add(deposit);
         _context.Movements.Add(movement);
         await _context.SaveChangesAsync();
 
-        var depositDTO = new DepositDTO
-        {
-            MovementType = movement.MovementType.ToString(),
-            DestinationAccount = movement.Destination,
-            Amount = depositRequest.Amount,
-            Bank = destinationAccount.Customer.Bank.Name.ToString(),
-            TransactionDateTime = depositRequest.TransactionDateTime,
-        };
+        var depositDTO = deposit.Adapt<DepositDTO>();
+
+        depositDTO.DestinationAccount = movement.Destination;
+        depositDTO.Bank = destinationAccount.Customer.Bank.Name;
+        depositDTO.MovementType = movement.MovementType.ToString();
+
+        //var depositDTO = new DepositDTO
+        //{
+        //    MovementType = movement.MovementType.ToString(),
+        //    DestinationAccount = movement.Destination,
+        //    Amount = depositRequest.Amount,
+        //    Bank = destinationAccount.Customer.Bank.Name.ToString(),
+        //    TransactionDateTime = depositRequest.TransactionDateTime,
+        //};
 
         return depositDTO;
     }
@@ -315,30 +320,21 @@ public class TransactionRepository : ITransactionRepository
 
         withdrawal.TransactionType = TransactionType.Withdrawal;
 
-        var movement = new Movement
-        {
-            AccountId = withdrawalRequest.OriginAccountId,
-            Destination = $"Holder: {originAccount.Holder}," +
-                          $" Number: ({originAccount.Number})",
-            Amount = withdrawalRequest.Amount,
-            TransferredDateTime = withdrawalRequest.TransactionDateTime,
-            TransferStatus = TransferStatus.Done,
-            MovementType = MovementType.Withdrawal
-        };
+        var movement = withdrawalRequest.Adapt<Movement>();
+
+        movement.Destination = $"Id: {originAccount.Id}," +
+                               $" Holder: {originAccount.Holder}," +
+                               $" Number: ({originAccount.Number})";
 
         _context.Transactions.Add(withdrawal);
         _context.Movements.Add(movement);
         await _context.SaveChangesAsync();
 
-        var withdrawalDTO = new WithdrawalDTO
-        {
-            MovementType = movement.MovementType.ToString(),
-            OriginAccount = $"Holder: {originAccount.Holder}," +
-                            $" Number: ({originAccount.Number})",
-            Amount = withdrawalRequest.Amount,
-            Bank = originAccount.Customer.Bank.Name.ToString(),
-            TransactionDateTime = withdrawalRequest.TransactionDateTime,
-        };
+        var withdrawalDTO = withdrawal.Adapt<WithdrawalDTO>();
+
+        withdrawalDTO.OriginAccount = movement.Destination;
+        withdrawalDTO.Bank = originAccount.Customer.Bank.Name;
+        withdrawalDTO.MovementType = movement.MovementType.ToString();
 
         return withdrawalDTO;
     }
