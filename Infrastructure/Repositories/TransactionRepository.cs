@@ -241,11 +241,6 @@ public class TransactionRepository : ITransactionRepository
 
         var destinationAccount = await GetAccountByIdAsync(depositRequest.DestinationAccountId);
 
-        if (destinationAccount == null)
-        {
-            return (false, "Destination account not found.");
-        }
-
         if (destinationAccount.Customer.BankId != depositRequest.BankId)
         {
             return (false, "The destination bank does not match that of the destination account");

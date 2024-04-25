@@ -27,8 +27,7 @@ namespace Infrastructure.Mappings
             config.NewConfig<Transaction, TransferDTO>()
                 .Map(dest => dest.Amount, src => src.Amount)
                 .Map(dest => dest.TransferredDateTime, src => src.TransactionDateTime)
-                .Map(dest => dest.Destination, src => src.DestinationAccountId)
-                .Map(dest => dest.AccountId, src => src.OriginAccountId)
+                .Map(dest => dest.Destination, src => src.DestinationAccountId)                
                 .Map(dest => dest.MovementType, src => src.TransactionType);
 
             config.NewConfig<PaymentRequest, Transaction>()
