@@ -9,7 +9,7 @@ namespace Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Service> entity)
         {
-            entity.ToTable("Service");
+            entity.ToTable("Services");
 
             entity.HasKey(e => e.Id).HasName("Service_pkey");
 

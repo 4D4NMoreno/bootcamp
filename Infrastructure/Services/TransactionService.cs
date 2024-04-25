@@ -1,12 +1,8 @@
-﻿using Core.Constants;
-using Core.Entities;
-using Core.Exceptions;
+﻿using Core.Exceptions;
 using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Models;
 using Core.Request;
-using Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Services;
 
@@ -20,7 +16,7 @@ public class TransactionService : ITransactionService
     }
     public async Task<TransferDTO> MakeTransfer(TransferRequest transferRequest)
     {
-        var validationResult = await _repository.ValidateTransferRequest(transferRequest);
+        var validationResult = await _repository.ValidateTransfer(transferRequest);
 
         if (!validationResult.isValid)
         {
@@ -31,7 +27,7 @@ public class TransactionService : ITransactionService
     }
     public async Task<PaymentDTO> MakePayment(PaymentRequest paymentRequest)
     {
-        var validationResult = await _repository.ValidatePaymentRequest(paymentRequest);
+        var validationResult = await _repository.ValidatePayment(paymentRequest);
 
         if (!validationResult.isValid)
         {
@@ -42,7 +38,7 @@ public class TransactionService : ITransactionService
 
     public async Task<DepositDTO> MakeDeposit(DepositRequest DepositRequest)
     {
-        var validationResult = await _repository.ValidateDepositRequest(DepositRequest);
+        var validationResult = await _repository.ValidateDeposit(DepositRequest);
 
         if (!validationResult.isValid)
         {
@@ -53,7 +49,7 @@ public class TransactionService : ITransactionService
 
     public async Task<WithdrawalDTO> MakeWithdrawal(WithdrawalRequest withdrawalRequest)
     {
-        var validationResult = await _repository.ValidateWithdrawalRequest(withdrawalRequest);
+        var validationResult = await _repository.ValidateWithdrawal(withdrawalRequest);
 
         if (!validationResult.isValid)
         {
@@ -62,8 +58,12 @@ public class TransactionService : ITransactionService
         return await _repository.MakeWithdrawal(withdrawalRequest);
     }
 
-    public Task<List<MovementDTO>> GetFilteredMovements(FilterTransactionModel filter)
+    //public Task<List<MovementDTO>> GetFilteredMovements(FilterTransactionModel filter)
+    //{
+    //    return _repository.GetFilteredMovements(filter);
+    //}
+    public Task<List<TransactionDTO>> GetFilteredTransactions(FilterTransactionModel filter)
     {
-        return _repository.GetFilteredMovements(filter);
+        return _repository.GetFilteredTransactions(filter);
     }
 }

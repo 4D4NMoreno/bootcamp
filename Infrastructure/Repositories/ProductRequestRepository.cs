@@ -47,7 +47,13 @@ public class ProductRequestRepository : IProductRepository
 
         await _context.SaveChangesAsync();
 
-        var productDTO = request.Adapt<ProductRequestDTO>();
+        var createdProduct = await _context.ProductRequests
+                .Include(pr => pr.Currency)
+                .Include(pr => pr.Customer)
+                .ThenInclude(c => c.Bank)
+                .FirstOrDefaultAsync(pr => pr.Id == product.Id);
+
+        var productDTO = createdProduct.Adapt<ProductRequestDTO>();
 
         return productDTO;
     }

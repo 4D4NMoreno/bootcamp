@@ -27,8 +27,9 @@ namespace Infrastructure.Mappings
             config.NewConfig<Transaction, TransferDTO>()
                 .Map(dest => dest.Amount, src => src.Amount)
                 .Map(dest => dest.TransferredDateTime, src => src.TransactionDateTime)
-                .Map(dest => dest.Destination, src => src.DestinationAccountId)                
-                .Map(dest => dest.MovementType, src => src.TransactionType);
+                .Map(dest => dest.Destination, src => src.DestinationAccountId) 
+                .Map(dest => dest.MovementType, src => src.Description);
+            //.Map(dest => dest.MovementType, src => src.TransactionType);
 
             config.NewConfig<PaymentRequest, Transaction>()
                 .Map(dest => dest.Amount, src => src.Amount)
@@ -49,10 +50,11 @@ namespace Infrastructure.Mappings
                 .Map(dest => dest.DestinationAccountId, src => src.DestinationAccountId);
 
             config.NewConfig<Transaction, DepositDTO>()
-                .Map(dest => dest.MovementType, src => src.TransactionType)
+                //.Map(dest => dest.MovementType, src => src.TransactionType)
                 .Map(dest => dest.Amount, src => src.Amount)
                 .Map(dest => dest.TransactionDateTime, src => src.TransactionDateTime)
-                .Map(dest => dest.Bank, src => src.Bank);
+                .Map(dest => dest.Bank, src => src.Bank)
+                .Map(dest => dest.MovementType, src => src.Description);
 
             config.NewConfig<WithdrawalRequest, Transaction>()
                 .Map(dest => dest.Amount, src => src.Amount)
@@ -61,7 +63,7 @@ namespace Infrastructure.Mappings
                 .Map(dest => dest.OriginAccountId, src => src.OriginAccountId);
 
             config.NewConfig<Transaction, WithdrawalDTO>()
-                .Map(dest => dest.MovementType, src => src.TransactionType)
+                //.Map(dest => dest.MovementType, src => src.TransactionType)
                 .Map(dest => dest.Amount, src => src.Amount)
                 .Map(dest => dest.TransactionDateTime, src => src.TransactionDateTime)
                 .Map(dest => dest.Bank, src => src.Bank);

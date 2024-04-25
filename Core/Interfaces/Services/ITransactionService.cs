@@ -9,5 +9,10 @@ public interface ITransactionService
     Task<PaymentDTO> MakePayment(PaymentRequest paymentRequest);
     Task<DepositDTO> MakeDeposit(DepositRequest DepositRequest);
     Task<WithdrawalDTO> MakeWithdrawal(WithdrawalRequest withdrawalRequest);
-    Task<List<MovementDTO>> GetFilteredMovements(FilterTransactionModel filter);
+
+    //Task<List<MovementDTO>> GetFilteredMovements(FilterTransactionModel filter);
+
+    Task<List<TransactionDTO>> GetFilteredTransactions(FilterTransactionModel filter);
+
+
 }

@@ -24,13 +24,8 @@ namespace Infrastructure.Configurations
             builder.Property(e => e.Bank)
                    .HasColumnName("Bank");
 
-            builder.Property(e => e.TransactionType)
-                   .HasColumnName("TransactionType");
-
-            builder.Property(e => e.TransactionType)
-                   .HasColumnName("TransactionType");
-
-
+            //builder.Property(e => e.TransactionType)
+            //       .HasColumnName("TransactionType");
 
         }
     }

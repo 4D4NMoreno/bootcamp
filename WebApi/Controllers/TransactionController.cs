@@ -41,11 +41,18 @@ namespace WebApi.Controllers
 
         }
         [HttpGet("filtered")]
-        public async Task<ActionResult<List<MovementDTO>>> GetFilteredMovements([FromQuery] FilterTransactionModel filter)
-        { 
+        public async Task<ActionResult<List<MovementDTO>>> GetFilteredTransactions([FromQuery] FilterTransactionModel filter)
+        {
 
-            var transactions = await _service.GetFilteredMovements(filter);
+            var transactions = await _service.GetFilteredTransactions(filter);
             return Ok(transactions);
         }
+        //[HttpGet("filtered")]
+        //public async Task<ActionResult<List<MovementDTO>>> GetFilteredMovements([FromQuery] FilterTransactionModel filter)
+        //{ 
+
+        //    var transactions = await _service.GetFilteredMovements(filter);
+        //    return Ok(transactions);
+        //}
     }
 }
