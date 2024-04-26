@@ -22,7 +22,19 @@ public class AccountRepository : IAccountRepository
 
     public async Task<AccountDTO> Add(CreateAccountRequest request)
     {
+        var currency = await _context.Currencies.FindAsync(request.CurrencyId);
 
+        if (currency is null)
+        {
+            throw new BusinessLogicException("Currency not found");
+        }
+
+        var customer = await _context.Customers.FindAsync(request.CustomerId);
+
+        if (customer is null)
+        {
+            throw new BusinessLogicException("Customer not found");
+        }
 
         var account = request.Adapt<Account>();
 
@@ -42,9 +54,10 @@ public class AccountRepository : IAccountRepository
 
         var createdAccount = await _context.Accounts
             .Include(a => a.Currency)
-            .Include(a => a.Customer)
             .Include(a => a.SavingAccount)
             .Include(a => a.CurrentAccount)
+            .Include(a => a.Customer)
+            .ThenInclude(c => c.Bank)
             .FirstOrDefaultAsync(a => a.Id == account.Id);
 
         return createdAccount.Adapt<AccountDTO>();

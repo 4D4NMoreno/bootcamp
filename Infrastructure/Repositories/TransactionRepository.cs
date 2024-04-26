@@ -7,7 +7,6 @@ using Core.Request;
 using Infrastructure.Contexts;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Infrastructure.Repositories;
 
@@ -34,7 +33,7 @@ public class TransactionRepository : ITransactionRepository
 
         originMovement.AccountId = transferRequest.OriginAccountId;
 
-        originMovement.Destination = Destination(originAccount);
+        originMovement.Destination = Destination(destinationAccount);
 
         var destinationMovement = transferRequest.Adapt<Movement>();
 
@@ -60,7 +59,7 @@ public class TransactionRepository : ITransactionRepository
 
         var transferDTO = transfer.Adapt<TransferDTO>();
 
-        transferDTO.Destination = originMovement.Destination;
+        transferDTO.DestinationAccount = originMovement.Destination;
 
         transferDTO.TransferStatus = originMovement.TransferStatus.ToString();
 
@@ -72,6 +71,11 @@ public class TransactionRepository : ITransactionRepository
         var originAccount = await GetAccountByIdAsync(transferRequest.OriginAccountId);
 
         var destinationAccount = await GetAccountByIdAsync(transferRequest.DestinationAccountId);
+
+        if(originAccount == destinationAccount)
+        {
+            return (false, "Same account");
+        }
 
         if (originAccount.Status == AccountStatus.Inactive ||
             destinationAccount.Status == AccountStatus.Inactive)
@@ -118,9 +122,9 @@ public class TransactionRepository : ITransactionRepository
                                              (today, transferRequest.DestinationAccountId);
 
             if (originTransactionsSum + transferRequest.Amount >
-                originAccount.CurrentAccount.OperationalLimit ||
-                destinationTransactionsSum + transferRequest.Amount >
-                destinationAccount.CurrentAccount.OperationalLimit)
+                                        originAccount.CurrentAccount.OperationalLimit ||
+                                        destinationTransactionsSum + transferRequest.Amount >
+                                        destinationAccount.CurrentAccount.OperationalLimit)
             {
                 return (false, "Operational limit reached");
             }
@@ -340,7 +344,8 @@ public class TransactionRepository : ITransactionRepository
                 throw new ArgumentException("Invalid year or month.");
             }
 
-            var startDate = new DateTime(filter.Year.Value, filter.Month.Value, 1, 0, 0, 0, DateTimeKind.Utc);
+            var startDate = new DateTime(filter.Year.Value,
+                                         filter.Month.Value, 1, 0, 0, 0, DateTimeKind.Utc);
 
             var endDate = startDate.AddMonths(1).AddDays(-1);
 
@@ -422,8 +427,7 @@ public class TransactionRepository : ITransactionRepository
 
     private string Destination(Account account)
     {
-        var destination = $"Id: {account.Id}, " +
-                          $"Holder: {account.Holder}, " +
+        var destination = $"Holder: {account.Holder}, " +
                           $"Number: ({account.Number})";
 
         return destination;

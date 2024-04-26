@@ -1,18 +1,25 @@
 ﻿using Core.Entities;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Configurations
+namespace Infrastructure.Configurations;
+
+public class ProductConfiguration : IEntityTypeConfiguration<Product>
 {
-    public class ProductConfiguration : IEntityTypeConfiguration<ProductRequest>
+    public void Configure(EntityTypeBuilder<Product> entity)
     {
-        public void Configure(EntityTypeBuilder<ProductRequest> entity)
-        {
-            entity.HasKey(p => p.Id);
+        entity
+            .HasKey(p => p.Id)
+            .HasName("Product_pkey");
 
-            
-        }
+        entity
+            .Property(e => e.ProductName)
+            .HasMaxLength(150)
+            .IsRequired();
+
+        entity
+            .HasMany(d => d.ProductRequests)
+            .WithOne(p => p.Product)
+            .HasForeignKey(p => p.ProductId);
     }
 }
-
-

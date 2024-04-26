@@ -29,6 +29,6 @@ public class Customer
     public virtual Bank Bank { get; set; } = null!;
     public ICollection<Account> Accounts { get; set; } = new List<Account>();
 
-    public ICollection<ProductRequest> Products { get; set; } = new List<ProductRequest>();
+    public ICollection<ProductRequest> ProductRequets { get; set; } = new List<ProductRequest>();
 
 }

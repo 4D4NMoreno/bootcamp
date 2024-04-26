@@ -14,14 +14,14 @@ public class ProductMappingConfiguration : IRegister
         config.NewConfig<CreateProductRequest, ProductRequest>()
             .Map(dest => dest.CustomerId, src => src.CustomerId)
             .Map(dest => dest.CurrencyId, src => src.CurrencyId)
-            .Map(dest => dest.ProductName, src => src.ProductName)
+            .Map(dest => dest.ProductId, src => src.ProductId)
             .Map(dest => dest.Description, src => src.Description)
             .Map(dest => dest.ApplicationDate, src => src.ApplicationDate);
 
 
         config.NewConfig<ProductRequest, ProductRequestDTO>()
-            .Map(dest => dest.ProductName, src => src.ProductName.ToString())
             .Map(dest => dest.Currency, src => src.Currency.Name)
+            .Map(dest => dest.ProductName, src => src.Product.ProductName)
             .Map(dest => dest.Customer, src => new
             {
                 Id = src.Customer.Id,

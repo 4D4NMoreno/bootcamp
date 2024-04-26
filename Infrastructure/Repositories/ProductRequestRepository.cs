@@ -18,10 +18,12 @@ public class ProductRequestRepository : IProductRepository
     {
         _context = context;
     }
+
     public async Task<ProductRequestDTO> Add(CreateProductRequest request)
     {
+        var product = await _context.Products.FindAsync(request.ProductId);
 
-        if (!Enum.IsDefined(typeof(ProductName), request.ProductName))
+        if (request.ProductId != product.Id)
         {
             throw new BusinessLogicException("ProductName not found");
         }
@@ -41,19 +43,15 @@ public class ProductRequestRepository : IProductRepository
             throw new BusinessLogicException("Currency not found");
         }
 
-        var product = request.Adapt<ProductRequest>();
+        var productRequest = request.Adapt<ProductRequest>();
 
-        _context.ProductRequests.Add(product);
+        _context.ProductRequests.Add(productRequest);
 
         await _context.SaveChangesAsync();
 
-        var createdProduct = await _context.ProductRequests
-                .Include(pr => pr.Currency)
-                .Include(pr => pr.Customer)
-                .ThenInclude(c => c.Bank)
-                .FirstOrDefaultAsync(pr => pr.Id == product.Id);
+        //var createdProduct = productRequest.Adapt<ProductRequestDTO>();
 
-        var productDTO = createdProduct.Adapt<ProductRequestDTO>();
+        var productDTO = productRequest.Adapt<ProductRequestDTO>();
 
         return productDTO;
     }

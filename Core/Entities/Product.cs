@@ -2,7 +2,7 @@
 
 public class Product
 {
-    public Guid Id { get; set; }
-
+    public int Id { get; set; }
     public string ProductName { get; set; }
+    public ICollection<ProductRequest> ProductRequests { get; set; } = new List<ProductRequest>();
 }
