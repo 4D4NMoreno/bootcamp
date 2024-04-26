@@ -14,20 +14,20 @@ namespace WebApi.Controllers
             _service = service;
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Create([FromBody] CreateEnterpriseModel model)
-        //{
-        //    return Ok(await _service.Add(model));
-        //}
-        //[HttpGet("GetAll")]
-        //public async Task<IActionResult> GetAll()
-        //{
-        //    return Ok(await _service.GetAll());
-        //}
-        //[HttpPut("Update")]
-        //public async Task<IActionResult> Update([FromBody] UpdateEnterpriseModel model)
-        //{
-        //    return Ok(await _service.Update(model));
-        //}
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] CreateEnterpriseModel model)
+        {
+            return Ok(await _service.Add(model));
+        }
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(await _service.GetAll());
+        }
+        [HttpPut("Update")]
+        public async Task<IActionResult> Update([FromBody] UpdateEnterpriseModel model)
+        {
+            return Ok(await _service.Update(model));
+        }
     }
 }

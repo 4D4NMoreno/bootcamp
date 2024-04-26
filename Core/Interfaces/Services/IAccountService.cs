@@ -8,4 +8,7 @@ public interface IAccountService
 {
     Task<AccountDTO> Add(CreateAccountRequest request);
     Task<List<AccountDTO>> GetFiltered(FilterAccountModel filter);
+    Task<AccountDTO> Update(UpdateAccountModel model);
+    Task<bool> Delete(int id);
+
 }

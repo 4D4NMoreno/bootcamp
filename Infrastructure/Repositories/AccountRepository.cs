@@ -62,6 +62,92 @@ public class AccountRepository : IAccountRepository
 
         return createdAccount.Adapt<AccountDTO>();
     }
+    public async Task<AccountDTO> Update(UpdateAccountModel model)
+    {
+        var account = await _context.Accounts
+            .Include(a => a.SavingAccount)
+            .Include(a => a.CurrentAccount)
+            .FirstOrDefaultAsync(a => a.Id == model.Id);
+
+        if (account is null)
+        {
+            throw new BusinessLogicException("Account was not found");
+        }
+
+        if (account.IsDeleted == true)
+        {
+            throw new BusinessLogicException($"The account with ID : {account.Id} is deleted.");
+        }
+
+        var customer = await _context.Customers.FindAsync(model.CustomerId);
+
+        if (customer == null) { throw new BusinessLogicException("Customer was not found");}
+
+
+        var currency = await _context.Currencies.FindAsync(model.CurrencyId);
+
+        if (currency == null) { throw new BusinessLogicException("Currency was not found"); }
+
+        
+
+        if (model.Type != account.Type)
+        {
+            throw new BusinessLogicException($"The account type is not : {model.Type}");
+        }
+        
+        switch (account.Type)
+        {
+            case AccountType.Saving:
+
+                if (account.SavingAccount == null)
+                {
+                    account.SavingAccount = new SavingAccount();
+                }
+                model.SavingAccount.Adapt(account.SavingAccount);
+                break;
+
+            case AccountType.Current:
+                if (account.CurrentAccount == null)
+                {
+                    account.CurrentAccount = new CurrentAccount();
+                }
+                model.CurrentAccount.Adapt(account.CurrentAccount);
+                break;
+
+            default:
+                throw new ArgumentException("Invalid account type");
+        }
+
+        await _context.SaveChangesAsync();
+
+        account = await _context.Accounts
+            .Include(a => a.Currency)
+            .Include(a => a.Customer)
+            .ThenInclude(c => c.Bank)
+            .Include(a => a.SavingAccount)
+            .Include(a => a.CurrentAccount)
+            .FirstOrDefaultAsync(a => a.Id == account.Id);
+
+        return account.Adapt<AccountDTO>();
+    }
+    public async Task<bool> Delete(int id)
+    {
+        var account = await _context.Accounts.FindAsync(id);
+
+        if (account is null)
+        {
+            throw new NotFoundException("Account with ID " + id + " was not found");
+        }
+
+        account.IsDeleted = true;
+
+        _context.Accounts.Update(account);
+
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
 
     public async Task<AccountDTO> GetById(int id)
     {
@@ -81,7 +167,13 @@ public class AccountRepository : IAccountRepository
     public async Task<List<AccountDTO>> GetFiltered(FilterAccountModel filter)
     {
         var query = _context.Accounts
-                .Include(c => c.Currency)
+                .Where(a => !a.IsDeleted)
+                .OrderBy(a => a.Id)
+                .Include(a => a.Currency)
+                .Include(a => a.SavingAccount)
+                .Include(a => a.CurrentAccount)
+                .Include(a => a.Customer)
+                .ThenInclude(c => c.Bank)
                 .AsQueryable();
 
         if (filter.Number is not null)

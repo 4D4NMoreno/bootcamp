@@ -22,30 +22,30 @@ namespace WebApi.Controllers
         {
             return Ok(await _service.Add(request));
         }
-        //[HttpGet("filtrar")]
-        //public async Task<IActionResult> GetFiltered([FromQuery] FilterCurrencyModel filter)
-        //{
-        //    var currency = await _service.GetFiltered(filter);
-        //    return Ok(currency);
-        //}
-        //[HttpGet("{id}")]
-        //public async Task<IActionResult> GetById(int id)
-        //{
+        [HttpGet("filtrar")]
+        public async Task<IActionResult> GetFiltered([FromQuery] FilterCurrencyModel filter)
+        {
+            var currency = await _service.GetFiltered(filter);
+            return Ok(currency);
+        }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
 
-        //    var currency = await _service.GetById(id);
-        //    return Ok(currency);
+            var currency = await _service.GetById(id);
+            return Ok(currency);
 
-        //}
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //   return Ok(await _service.Delete(id));
-        //}
-        //[HttpPut("Actualizar")]
-        //public async Task<IActionResult> Update([FromBody] UpdateCurrencyModel request)
-        //{
-        //    return Ok(await _service.Update(request));
-        //}
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            return Ok(await _service.Delete(id));
+        }
+        [HttpPut("Actualizar")]
+        public async Task<IActionResult> Update([FromBody] UpdateCurrencyModel request)
+        {
+            return Ok(await _service.Update(request));
+        }
     }
 }
 

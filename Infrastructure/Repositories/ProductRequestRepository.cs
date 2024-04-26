@@ -23,14 +23,14 @@ public class ProductRequestRepository : IProductRepository
     {
         var product = await _context.Products.FindAsync(request.ProductId);
 
-        if (request.ProductId != product.Id)
+        if (product is null)
         {
-            throw new BusinessLogicException("ProductName not found");
+            throw new BusinessLogicException("Product not found");
         }
 
         var customer = await _context.Customers.FindAsync(request.CustomerId);
 
-        if (customer == null)
+        if (customer is null)
         {
             throw new BusinessLogicException("Customer not found");
         }
@@ -38,7 +38,7 @@ public class ProductRequestRepository : IProductRepository
         var currency = await _context.Currencies.FindAsync(request.CurrencyId);
 
 
-        if (currency == null)
+        if (currency is null)
         {
             throw new BusinessLogicException("Currency not found");
         }

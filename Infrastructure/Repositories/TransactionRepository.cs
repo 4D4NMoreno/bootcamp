@@ -24,7 +24,7 @@ public class TransactionRepository : ITransactionRepository
         var originAccount = await GetAccountByIdAsync(transferRequest.OriginAccountId);
 
         var destinationAccount = await GetAccountByIdAsync(transferRequest.DestinationAccountId);
-        
+
         originAccount.Balance -= transferRequest.Amount;
 
         destinationAccount.Balance += transferRequest.Amount;
@@ -241,7 +241,6 @@ public class TransactionRepository : ITransactionRepository
 
         if (destinationAccount.CurrentAccount != null)
         {
-
             var today = depositRequest.TransactionDateTime;
 
             var originTransactionsSum = CalculateTransactionSumForMonth
@@ -358,13 +357,12 @@ public class TransactionRepository : ITransactionRepository
             throw new ArgumentException("Both month and year should be specified if one is provided.");
         }
 
-        if (filter.StartDate.HasValue/* || filter.EndDate.HasValue*/)
+        if (filter.StartDate.HasValue)
         {
             var startDate = filter.StartDate.Value.ToUniversalTime().Date;
-            //var endDate = filter.EndDate.Value.Date.AddDays(1).AddTicks(-1);
 
             transactionsQuery = transactionsQuery
-                .Where(t => t.TransactionDateTime >= startDate); /*&& t.TransactionDateTime <= endDate);*/
+                .Where(t => t.TransactionDateTime >= startDate); 
         }
         if (filter.EndDate.HasValue )
         {
@@ -417,12 +415,23 @@ public class TransactionRepository : ITransactionRepository
 
     private async Task<Account> GetAccountByIdAsync(int accountId)
     {
-        return await _context.Accounts
-             .Include(a => a.CurrentAccount)
-             .Include(a => a.Customer)
-             .ThenInclude(c => c.Bank)
-             .FirstOrDefaultAsync(a => a.Id == accountId) ??
-             throw new BusinessLogicException("account not found.");
+        var account = await _context.Accounts
+        .Include(a => a.CurrentAccount)
+        .Include(a => a.Customer)
+        .ThenInclude(c => c.Bank)
+        .FirstOrDefaultAsync(a => a.Id == accountId);
+
+        if (account is null)
+        {
+            throw new BusinessLogicException("Account not found.");
+        }
+
+        if (account.IsDeleted)
+        {
+            throw new BusinessLogicException($"The account with ID : {accountId} is deleted.");
+        }
+
+        return account;
     }
 
     private string Destination(Account account)
