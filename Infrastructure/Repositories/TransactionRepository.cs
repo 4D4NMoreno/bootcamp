@@ -436,84 +436,12 @@ public class TransactionRepository : ITransactionRepository
 
     private string Destination(Account account)
     {
-        var destination = $"Holder: {account.Holder}, " +
+        var destination = $"Id: {account.Id}, " +
+                          $"Holder: {account.Holder}, " +
                           $"Number: ({account.Number})";
 
         return destination;
     }
-    
 
-    //public async Task<List<MovementDTO>> GetFilteredMovements(FilterTransactionModel filter)
-    //{
-    //    var movementsQuery = _context.Movements
-    //        .Where(m => m.AccountId == filter.AccountId)
-    //        .AsQueryable();
-
-    //    if (filter.AccountId == 0)
-    //    {
-    //        throw new BusinessLogicException("AccountId is required");
-    //    }
-
-    //    if (filter.Month.HasValue && filter.Year.HasValue)
-    //    {
-    //        var startDate = new DateTime(filter.Year.Value, filter.Month.Value, 1, 0, 0, 0, DateTimeKind.Utc);
-    //        var endDate = startDate.AddMonths(1).AddDays(-1);
-
-    //        movementsQuery = movementsQuery
-    //            .Where(m => m.TransferredDateTime >= startDate && m.TransferredDateTime <= endDate);
-    //    }
-    //    else if (filter.Month.HasValue || filter.Year.HasValue)
-    //    {
-    //        throw new BusinessLogicException("Both month and year should be specified if one is provided.");
-    //    }
-
-    //    if (!string.IsNullOrEmpty(filter.Description))
-    //    {
-    //        string filterDescriptionLower = filter.Description.ToLower();
-    //        string filterDescription = filterDescriptionLower
-    //               .First().ToString().ToUpper() + filterDescriptionLower.Substring(1);
-
-    //        var movements = await movementsQuery.ToListAsync();
-
-    //        movements = movements
-    //            .Where(m => Enum.GetName(typeof(MovementType), m.MovementType)
-    //            .Equals(filterDescription, StringComparison.OrdinalIgnoreCase))
-    //            .ToList();
-
-    //        var movementDTOs = movements.Select(m =>
-    //        {
-    //            var movementDTO = new MovementDTO
-    //            {
-    //                AccountId = m.AccountId,
-    //                Description = Enum.GetName(typeof(MovementType), m.MovementType),
-    //                Amount = m.Amount,
-    //                TransferredDateTime = m.TransferredDateTime,
-    //                TransferStatus = m.TransferStatus.ToString()
-    //            };
-
-    //            return movementDTO;
-    //        }).ToList();
-
-    //        return movementDTOs;
-    //    }
-
-    //    var allMovements = await movementsQuery.ToListAsync();
-
-    //    var allMovementDTOs = allMovements.Select(m =>
-    //    {
-    //        var movementDTO = new MovementDTO
-    //        {
-    //            AccountId = m.AccountId,
-    //            Description = m.MovementType.ToString(),
-    //            Amount = m.Amount,
-    //            TransferredDateTime = m.TransferredDateTime,
-    //            TransferStatus = m.TransferStatus.ToString()
-    //        };
-
-    //        return movementDTO;
-    //    }).ToList();
-
-    //    return allMovementDTOs;
-    //}
 }
 

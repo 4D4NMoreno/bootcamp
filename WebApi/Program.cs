@@ -11,10 +11,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddWebApi(builder.Configuration);
 
-//builder.WebHost.ConfigureKestrel(serverOptions =>
-//{
-//    serverOptions.ListenAnyIP(8080);
-//});
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(8080);
+});
 
 var app = builder.Build();
 
